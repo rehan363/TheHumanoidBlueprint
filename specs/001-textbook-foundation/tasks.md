@@ -48,7 +48,7 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T014 Create GitHub Actions workflow file at .github/workflows/deploy.yml with Node.js 18, npm ci, build, and gh-pages deployment (per research.md deployment strategy)
+- [x] T014 Create GitHub Actions workflow file at .github/workflows/deploy.yml with Node.js 18, npm ci, build, and gh-pages deployment (per research.md deployment strategy)
 - [ ] T015 [P] Create placeholder files for Weeks 3-13 using placeholder template from data-model.md (module2/week6-7, module3/week8-10, module4/week11-13)
 - [ ] T016 [P] Create .lighthouserc.js configuration file with performance budgets (FCP <1.5s, TTI <3.5s, performance ≥0.9)
 - [ ] T017 [P] Create GitHub Actions workflow file at .github/workflows/lighthouse-ci.yml for automated performance audits on PRs

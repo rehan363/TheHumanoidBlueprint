@@ -1,0 +1,9 @@
+{
+  "label": "Module 2: The Digital Twin (Gazebo & Unity)",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Master physics simulation with Gazebo and Unity robotics simulation. Weeks 6-7 of the curriculum."
+  },
+  "collapsed": true
+}
