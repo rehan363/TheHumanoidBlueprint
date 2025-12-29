@@ -9,6 +9,12 @@ const config: Config = {
   tagline: 'Learn Physical AI, Embodied Intelligence, and Humanoid Robotics',
   favicon: 'img/favicon.ico',
 
+  // Enable Mermaid for diagrams
+  markdown: {
+    mermaid: true,
+  },
+  themes: ['@docusaurus/theme-mermaid'],
+
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
@@ -112,7 +118,7 @@ const config: Config = {
           items: [
             {
               label: 'Course Overview',
-              to: '/', // intro.md with routeBasePath '/'
+              to: '/', // Homepage (docs/intro.md with routeBasePath '/')
             },
             {
               label: 'GitHub Repository',

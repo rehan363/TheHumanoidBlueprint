@@ -48,11 +48,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [x] T014 Create GitHub Actions workflow file at .github/workflows/deploy.yml with Node.js 18, npm ci, build, and gh-pages deployment (per research.md deployment strategy)
-- [ ] T015 [P] Create placeholder files for Weeks 3-13 using placeholder template from data-model.md (module2/week6-7, module3/week8-10, module4/week11-13)
-- [ ] T016 [P] Create .lighthouserc.js configuration file with performance budgets (FCP <1.5s, TTI <3.5s, performance ≥0.9)
-- [ ] T017 [P] Create GitHub Actions workflow file at .github/workflows/lighthouse-ci.yml for automated performance audits on PRs
-- [ ] T018 Test production build with `npm run build` and verify no broken links or build errors
+- [x] T014 Create GitHub Actions workflow file at .github/workflows/deploy.yml with Node.js 18, npm
+ ci, build, and gh-pages deployment (per research.md deployment strategy)
+- [x] T015 [P] Create placeholder files for Weeks 3-13 using placeholder template from data-model.md (module2/week6-7, module3/week8-10, module4/week11-13)
+- [x] T016 [P] Create .lighthouserc.js configuration file with performance budgets (FCP <1.5s, TTI <3.5s, performance ≥0.9)
+- [x] T017 [P] Create GitHub Actions workflow file at .github/workflows/lighthouse-ci.yml for automated performance audits on PRs
+- [x] T018 Test production build with `npm run build` and verify no broken links or build errors
 - [ ] T019 Test production serve with `npm run serve` and verify site functionality at http://localhost:3000
 
 **Checkpoint**: Foundation ready - user story content authoring can now begin in parallel
@@ -67,15 +68,15 @@
 
 ### Implementation for User Story 1
 
-- [ ] T020 [P] [US1] Create docs/intro.md homepage file with course title "Physical AI & Humanoid Robotics"
-- [ ] T021 [P] [US1] Add course tagline and description to docs/intro.md (educational value proposition)
-- [ ] T022 [US1] Add 4-module overview section to docs/intro.md with module titles (Module 1: ROS 2, Module 2: Gazebo & Unity, Module 3: NVIDIA Isaac, Module 4: VLA)
-- [ ] T023 [US1] Add 13-week breakdown section to docs/intro.md listing all week titles organized by module
-- [ ] T024 [US1] Add learning outcomes section to docs/intro.md (6 learning outcomes from hackathon document)
-- [ ] T025 [US1] Add hardware requirements overview section to docs/intro.md (brief summary referencing Week 1-2 for details)
-- [ ] T026 [US1] Add "Why Physical AI Matters" section to docs/intro.md explaining humanoid robotics significance
-- [ ] T027 [US1] Configure docs/intro.md as homepage in docusaurus.config.js (set docs plugin routeBasePath to '/')
-- [ ] T028 [US1] Verify homepage renders correctly with `npm start` and test navigation to homepage from any page
+- [x] T020 [P] [US1] Create docs/intro.md homepage file with course title "Physical AI & Humanoid Robotics"
+- [x] T021 [P] [US1] Add course tagline and description to docs/intro.md (educational value proposition)
+- [x] T022 [US1] Add 4-module overview section to docs/intro.md with module titles (Module 1: ROS 2, Module 2: Gazebo & Unity, Module 3: NVIDIA Isaac, Module 4: VLA)
+- [x] T023 [US1] Add 13-week breakdown section to docs/intro.md listing all week titles organized by module
+- [x] T024 [US1] Add learning outcomes section to docs/intro.md (6 learning outcomes from hackathon document)
+- [x] T025 [US1] Add hardware requirements overview section to docs/intro.md (brief summary referencing Week 1-2 for details)
+- [x] T026 [US1] Add "Why Physical AI Matters" section to docs/intro.md explaining humanoid robotics significance
+- [x] T027 [US1] Configure docs/intro.md as homepage in docusaurus.config.ts (set docs plugin routeBasePath to '/')
+- [x] T028 [US1] Verify homepage renders correctly with `npm run build` and test navigation to homepage from any page
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - homepage displays complete curriculum overview
 
