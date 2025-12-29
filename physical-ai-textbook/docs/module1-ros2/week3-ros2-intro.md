@@ -135,20 +135,20 @@ flowchart LR
     subgraph Communication["ROS 2 Communication Patterns"]
         direction TB
 
-        subgraph Topics["📢 Topics (Pub/Sub)"]
-            P1[Publisher] -->|"sensor_msgs/Image"| T1[/camera/image]
+        subgraph Topics["Topics - Pub/Sub"]
+            P1[Publisher] -->|"sensor_msgs/Image"| T1["camera/image"]
             T1 --> S1[Subscriber 1]
             T1 --> S2[Subscriber 2]
         end
 
-        subgraph Services["🔄 Services (Req/Res)"]
-            C[Client] -->|Request| SRV[/get_map]
+        subgraph Services["Services - Req/Res"]
+            C[Client] -->|Request| SRV["get_map"]
             SRV -->|Response| C
             SRV --- SV[Server]
         end
 
-        subgraph Actions["🎯 Actions (Goal/Feedback/Result)"]
-            AC[Action Client] -->|Goal| ACT[/navigate_to_pose]
+        subgraph Actions["Actions - Goal/Feedback/Result"]
+            AC[Action Client] -->|Goal| ACT["navigate_to_pose"]
             ACT -->|Feedback| AC
             ACT -->|Result| AC
             ACT --- AS[Action Server]

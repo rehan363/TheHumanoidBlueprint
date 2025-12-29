@@ -288,9 +288,9 @@ flowchart LR
     end
 
     subgraph Topics
-        T1[/camera/image]
-        T2[/scan]
-        T3[/imu/data]
+        T1["camera/image"]
+        T2["scan"]
+        T3["imu/data"]
     end
 
     subgraph Subscribers
@@ -299,9 +299,9 @@ flowchart LR
         S3[Control Node]
     end
 
-    P1 -->|sensor_msgs/Image| T1
-    P2 -->|sensor_msgs/LaserScan| T2
-    P3 -->|sensor_msgs/Imu| T3
+    P1 -->|Image| T1
+    P2 -->|LaserScan| T2
+    P3 -->|Imu| T3
 
     T1 --> S1
     T1 --> S2
