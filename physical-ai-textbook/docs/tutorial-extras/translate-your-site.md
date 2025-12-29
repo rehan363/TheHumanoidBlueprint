@@ -4,13 +4,17 @@ sidebar_position: 2
 
 # Translate your site
 
-Let's translate `docs/intro.md` to French.
+Let's translate the homepage content to French.
+
+:::note
+This is an example from the Docusaurus template. For this Physical AI textbook, we use `docs/intro.md` as the homepage with routeBasePath: '/'.
+:::
 
 ## Configure i18n
 
-Modify `docusaurus.config.js` to add support for the `fr` locale:
+Modify `docusaurus.config.ts` to add support for the `fr` locale:
 
-```js title="docusaurus.config.js"
+```ts title="docusaurus.config.ts"
 export default {
   i18n: {
     defaultLocale: 'en',
@@ -21,7 +25,7 @@ export default {
 
 ## Translate a doc
 
-Copy the `docs/intro.md` file to the `i18n/fr` folder:
+Copy the homepage file to the `i18n/fr` folder:
 
 ```bash
 mkdir -p i18n/fr/docusaurus-plugin-content-docs/current/
