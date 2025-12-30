@@ -11,32 +11,42 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Module 1: ROS 2 Foundations',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Master the "Robotic Nervous System". Learn ROS 2 nodes, topics, services,
+        and how to build the foundational architecture for Physical AI systems.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Module 2: The Digital Twin',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Bridge reality and simulation. Explore high-fidelity physics with Gazebo
+        and Unity, simulating complex environments before deploying to hardware.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Module 3: AI-Robot Brain',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Powered by NVIDIA Isaac™. Develop advanced perception, VSLAM, and
+        autonomous navigation for humanoid robots using hardware-accelerated AI.
+      </>
+    ),
+  },
+  {
+    title: 'Module 4: VLA Integration',
+    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    description: (
+      <>
+        The future of Robotics. Integrate Vision-Language-Action models (VLA)
+        and LLMs like GPT-4 to enable natural human-robot interaction.
       </>
     ),
   },
@@ -44,7 +54,7 @@ const FeatureList: FeatureItem[] = [
 
 function Feature({title, Svg, description}: FeatureItem) {
   return (
-    <div className={clsx('col col--4')}>
+    <div className={clsx('col col--3')}>
       <div className="text--center">
         <Svg className={styles.featureSvg} role="img" />
       </div>

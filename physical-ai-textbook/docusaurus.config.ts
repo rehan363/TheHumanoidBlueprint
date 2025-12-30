@@ -6,7 +6,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Physical AI & Humanoid Robotics',
-  tagline: 'Learn Physical AI, Embodied Intelligence, and Humanoid Robotics',
+  tagline: 'Bridging the gap between the digital brain and the physical body.',
   favicon: 'img/favicon.ico',
 
   // Enable Mermaid for diagrams
