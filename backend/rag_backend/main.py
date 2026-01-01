@@ -11,7 +11,7 @@ import logging
 import sys
 
 from rag_backend.config import settings
-from rag_backend.routers import health_router
+from rag_backend.routers import health_router, chat_router
 from rag_backend.utils.rate_limiter import limiter
 from rag_backend.utils.error_handlers import register_exception_handlers
 
@@ -72,6 +72,7 @@ async def log_requests(request: Request, call_next):
 
 # Include routers
 app.include_router(health_router)
+app.include_router(chat_router)
 
 
 # Root endpoint
