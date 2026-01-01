@@ -31,8 +31,8 @@ app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
     description="RAG backend for Physical AI Textbook with Gemini and Qdrant",
-    docs_url="/api/docs" if settings.debug_mode else None,
-    redoc_url="/api/redoc" if settings.debug_mode else None,
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 # Add rate limiter state
@@ -83,7 +83,7 @@ async def root():
         "message": "Physical AI Textbook RAG Backend",
         "version": settings.app_version,
         "status": "running",
-        "docs": "/api/docs" if settings.debug_mode else "disabled"
+        "docs": "/docs"
     }
 
 
