@@ -108,10 +108,10 @@ The system will automatically route to that agent."""
         name="RAG Orchestrator",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
+            model="models/gemini-2.5-flash",
             openai_client=get_gemini_client()
         ),
-        functions=[
+        handoffs=[
             handoff(sub_agents["retrieval"]),
             handoff(sub_agents["explanation"]),
             handoff(sub_agents["comparison"]),

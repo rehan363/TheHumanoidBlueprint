@@ -80,8 +80,8 @@ async def query_chatbot(request: Request, query_request: ChatQueryRequest):
 
         # Run agent with user query
         result = await runner.run(
-            agent=orchestrator,
-            messages=[{"role": "user", "content": query_request.query}]
+            starting_agent=orchestrator,
+            input=query_request.query
         )
 
         # Extract answer from result

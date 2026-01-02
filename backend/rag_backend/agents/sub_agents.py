@@ -63,10 +63,10 @@ Remember: You are a search specialist. Your job is to find and cite, not to anal
         name="Retrieval Specialist",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
+            model="models/gemini-2.5-flash",
             openai_client=get_gemini_client()
         ),
-        functions=[
+        tools=[
             retrieve_context,
             list_week_topics,
             search_across_weeks,
@@ -290,10 +290,10 @@ EXAMPLE STRUCTURE:
         name="Summary Generator",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
+            model="models/gemini-2.5-flash",
             openai_client=get_gemini_client()
         ),
-        functions=[
+        tools=[
             generate_week_summary,
             list_week_topics
         ]
