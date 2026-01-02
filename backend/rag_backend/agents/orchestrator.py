@@ -7,7 +7,7 @@ to appropriate sub-agents using handoffs.
 
 import logging
 from openai import AsyncOpenAI
-from openai_agents import Agent, OpenAIChatCompletionsModel, handoff
+from agents import Agent, OpenAIChatCompletionsModel, handoff
 
 from rag_backend.config import settings
 from rag_backend.agents.sub_agents import get_all_sub_agents

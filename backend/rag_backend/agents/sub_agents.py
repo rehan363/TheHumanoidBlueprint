@@ -11,7 +11,7 @@ Each sub-agent is specialized for a specific task:
 
 import logging
 from openai import AsyncOpenAI
-from openai_agents import Agent, OpenAIChatCompletionsModel
+from agents import Agent, OpenAIChatCompletionsModel
 
 from rag_backend.config import settings
 from rag_backend.agents.tools import (

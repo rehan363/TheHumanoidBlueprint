@@ -8,8 +8,8 @@ from slowapi.util import get_remote_address
 import logging
 import time
 from datetime import datetime
-from openai_agents import Runner
-from openai_agents.exceptions import InputGuardrailTripwireTriggered, OutputGuardrailTripwireTriggered
+from agents import Runner
+from agents.exceptions import InputGuardrailTripwireTriggered, OutputGuardrailTripwireTriggered
 
 from rag_backend.models.chat import ChatQueryRequest, ChatQueryResponse, Citation
 from rag_backend.agents import get_orchestrator_agent, get_guardrail_response

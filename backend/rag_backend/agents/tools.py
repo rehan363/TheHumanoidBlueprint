@@ -7,7 +7,7 @@ and perform specialized tasks.
 
 import logging
 from typing import Optional, List, Dict, Any
-from openai_agents import tool
+from agents import function_tool
 
 from rag_backend.services.embedding_service import get_embedding_service
 from rag_backend.services.vector_store import get_vector_store
@@ -16,7 +16,7 @@ from rag_backend.config import settings
 logger = logging.getLogger(__name__)
 
 
-@tool
+@function_tool
 async def retrieve_context(
     query: str,
     top_k: int = 5,
@@ -82,7 +82,7 @@ async def retrieve_context(
         return f"Error retrieving context: {str(e)}"
 
 
-@tool
+@function_tool
 async def list_week_topics(week: int) -> str:
     """
     List all topics covered in a specific week of the textbook.
@@ -140,7 +140,7 @@ async def list_week_topics(week: int) -> str:
         return f"Error listing topics: {str(e)}"
 
 
-@tool
+@function_tool
 async def search_across_weeks(
     query: str,
     weeks: Optional[List[int]] = None
@@ -206,7 +206,7 @@ async def search_across_weeks(
         return f"Error searching across weeks: {str(e)}"
 
 
-@tool
+@function_tool
 async def get_chunk_neighbors(
     chunk_id: str,
     before: int = 1,
@@ -250,7 +250,7 @@ async def get_chunk_neighbors(
         return f"Error getting neighbors: {str(e)}"
 
 
-@tool
+@function_tool
 async def generate_week_summary(week: int) -> str:
     """
     Generate a high-level summary of an entire week's content.

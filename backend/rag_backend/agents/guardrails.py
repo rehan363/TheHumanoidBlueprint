@@ -8,7 +8,7 @@ Output guardrails run AFTER agent execution (parallel mode)
 import re
 import logging
 from typing import Optional
-from openai_agents import input_guardrail, output_guardrail, GuardrailFunctionOutput
+from agents import input_guardrail, output_guardrail, GuardrailFunctionOutput
 
 logger = logging.getLogger(__name__)
 
