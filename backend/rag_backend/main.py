@@ -101,7 +101,7 @@ async def startup_event():
     logger.info("="*60)
 
     try:
-        # Import and initialize services (triggers singleton creation)
+        # Initialize RAG pipeline (triggers singleton creation)
         from rag_backend.services.rag_pipeline import get_rag_pipeline
 
         rag_pipeline = get_rag_pipeline()

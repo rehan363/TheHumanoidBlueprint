@@ -25,11 +25,20 @@ from rag_backend.agents.tools import (
 logger = logging.getLogger(__name__)
 
 
-def get_gemini_client() -> AsyncOpenAI:
-    """Get AsyncOpenAI client configured for Gemini API."""
+def get_gemini_client(api_key: str = None) -> AsyncOpenAI:
+    """
+    Get AsyncOpenAI client configured for Gemini API.
+
+    Args:
+        api_key: Optional API key to use. If None, uses default key.
+
+    Returns:
+        AsyncOpenAI client
+    """
+    key = api_key or settings.gemini_api_key
     return AsyncOpenAI(
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-        api_key=settings.gemini_api_key
+        api_key=key
     )
 
 
@@ -63,10 +72,10 @@ Remember: You are a search specialist. Your job is to find and cite, not to anal
         name="Retrieval Specialist",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
-            openai_client=get_gemini_client()
+            model="gemini-2.0-flash-exp",
+            openai_client=get_gemini_client(settings.retrieval_agent_api_key)
         ),
-        functions=[
+        tools=[
             retrieve_context,
             list_week_topics,
             search_across_weeks,
@@ -121,8 +130,8 @@ DDS is the communication backbone that makes ROS 2 robots work together smoothly
         name="Explanation Specialist",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
-            openai_client=get_gemini_client()
+            model="gemini-2.0-flash-exp",
+            openai_client=get_gemini_client(settings.explanation_agent_api_key)
         )
     )
 
@@ -179,8 +188,8 @@ EXAMPLE STRUCTURE:
         name="Comparison Specialist",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
-            openai_client=get_gemini_client()
+            model="gemini-2.0-flash-exp",
+            openai_client=get_gemini_client(settings.comparison_agent_api_key)
         )
     )
 
@@ -230,8 +239,8 @@ What specific aspect would you like to learn about?"""
         name="Clarification Helper",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
-            openai_client=get_gemini_client()
+            model="gemini-2.0-flash-exp",
+            openai_client=get_gemini_client(settings.clarification_agent_api_key)
         )
     )
 
@@ -290,10 +299,10 @@ EXAMPLE STRUCTURE:
         name="Summary Generator",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
-            openai_client=get_gemini_client()
+            model="gemini-2.0-flash-exp",
+            openai_client=get_gemini_client(settings.summary_agent_api_key)
         ),
-        functions=[
+        tools=[
             generate_week_summary,
             list_week_topics
         ]

@@ -4,7 +4,7 @@ CLI tool to index documentation into Qdrant vector database.
 
 Usage:
     python scripts/index_docs.py --docs-path ../physical-ai-textbook/docs/
-    python scripts/index_docs.py --docs-path ../physical-ai-textbook/docs/ --week 3
+    python scripts/index_docs.py --docs-path ../physical-ai-textbook/docs/ --week 1
 """
 
 import asyncio
@@ -13,7 +13,8 @@ import argparse
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+import re
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 class DocumentIndexer:
-    """Document indexer for the RAG system."""
+    """Document indexer for RAG system."""
 
     def __init__(self):
         """Initialize indexer with services."""
@@ -49,45 +50,72 @@ class DocumentIndexer:
             "end_time": None
         }
 
-    def discover_markdown_files(self, docs_path: Path, week_filter: int = None) -> List[Dict[str, Any]]:
+    def discover_markdown_files(self, docs_path: Path, week_filter: int = None, module_filter: str = None) -> List[Dict[str, Any]]:
         """
-        Discover markdown files in the docs directory.
+        Discover markdown files in the actual docs directory structure.
+
+        Actual structure:
+            docs/
+            ├── module1-ros2/
+            │   ├── week1-foundations.md
+            │   ├── week2-landscape.md
+            │   └── week3-ros2-intro.md
+            ├── module2-gazebo/
+            ├── module3-isaac/
+            └── module4-vla/
 
         Args:
             docs_path: Base docs directory
             week_filter: Optional week number to process only specific week
+            module_filter: Optional module name to process only specific module
 
         Returns:
             List of file info dicts with path, week, module
         """
         files = []
 
-        # Pattern: docs/week-{N}/README.md or docs/week-{N}/{topic}.md
-        for week_dir in sorted(docs_path.glob("week-*")):
-            if not week_dir.is_dir():
+        # Pattern: docs/moduleX-{name}/week{N}-{topic}.md
+        for module_dir in sorted(docs_path.glob("module*-*")):
+            if not module_dir.is_dir():
                 continue
 
-            # Extract week number
-            try:
-                week_num = int(week_dir.name.split("-")[1])
-            except (IndexError, ValueError):
-                logger.warning(f"Invalid week directory name: {week_dir.name}")
+            # Extract module name (e.g., "module1-ros2" -> "ROS 2")
+            module_name_raw = module_dir.name
+            # Clean up module name for display
+            if "-" in module_name_raw:
+                # Format: module1-ros2 -> "ROS 2"
+                parts = module_name_raw.split("-", 1)
+                module_display = parts[1].replace("-", " ").title() if len(parts) > 1 else module_name_raw
+            else:
+                module_display = module_name_raw
+
+            # Apply module filter
+            if module_filter is None or module_filter.lower() not in module_name_raw.lower():
                 continue
 
-            # Apply week filter
-            if week_filter is not None and week_num != week_filter:
-                continue
+            # Find all week files in this module
+            for md_file in sorted(module_dir.glob("week*.md")):
+                # Extract week number from filename (e.g., "week1-foundations.md" -> 1)
+                match = re.match(r'week(\d+)', md_file.stem)
+                if not match:
+                    logger.warning(f"Skipping file with unexpected naming: {md_file.name}")
+                    continue
 
-            # Find markdown files in this week
-            for md_file in week_dir.glob("*.md"):
-                module_name = md_file.stem.replace("-", " ").title()
-                if module_name.lower() == "readme":
-                    module_name = f"Week {week_num} Overview"
+                week_num = int(match.group(1))
+
+                # Apply week filter
+                if week_filter is None or week_num != week_filter:
+                    continue
+
+                # Get topic from filename (e.g., "week1-foundations.md" -> "foundations")
+                topic = md_file.stem.split("-", 1)[1] if "-" in md_file.stem else ""
 
                 files.append({
                     "path": md_file,
                     "week": week_num,
-                    "module": module_name
+                    "module": module_display,
+                    "module_raw": module_name_raw,
+                    "topic": topic
                 })
 
         logger.info(f"Discovered {len(files)} markdown files")
@@ -107,10 +135,11 @@ class DocumentIndexer:
             file_path = file_info["path"]
             week = file_info["week"]
             module = file_info["module"]
+            topic = file_info.get("topic", "")
 
-            logger.info(f"Processing: Week {week} - {module} ({file_path.name})")
+            logger.info(f"Processing: Week {week} - {module} - {topic} ({file_path.name})")
 
-            # Chunk the file
+            # Chunk file
             chunks = self.chunker.chunk_file(file_path, week, module)
             self.stats["chunks_created"] += len(chunks)
 
@@ -120,7 +149,7 @@ class DocumentIndexer:
 
             # Generate embeddings for each chunk
             logger.info(f"Generating embeddings for {len(chunks)} chunks...")
-            for chunk in chunks:
+            for i, chunk in enumerate(chunks):
                 try:
                     embedding = await self.embedding_service.generate_embedding(chunk.content)
                     chunk.embedding = embedding
@@ -136,7 +165,7 @@ class DocumentIndexer:
             if chunks_with_embeddings:
                 indexed_count = await self.vector_store.upsert_chunks(chunks_with_embeddings)
                 self.stats["chunks_indexed"] += indexed_count
-                logger.info(f"✅ Indexed {indexed_count} chunks from {file_path.name}")
+                logger.info(f"Indexed {indexed_count} chunks from {file_path.name}")
                 return indexed_count
 
             return 0
@@ -146,13 +175,14 @@ class DocumentIndexer:
             self.stats["errors"] += 1
             return 0
 
-    async def index_all(self, docs_path: Path, week_filter: int = None) -> bool:
+    async def index_all(self, docs_path: Path, week_filter: int = None, module_filter: str = None) -> bool:
         """
         Index all markdown files in the docs directory.
 
         Args:
             docs_path: Base docs directory
             week_filter: Optional week number to process only specific week
+            module_filter: Optional module name to process only specific module
 
         Returns:
             bool: True if successful
@@ -161,7 +191,7 @@ class DocumentIndexer:
             self.stats["start_time"] = datetime.utcnow()
 
             # Discover files
-            files = self.discover_markdown_files(docs_path, week_filter)
+            files = self.discover_markdown_files(docs_path, week_filter, module_filter)
 
             if not files:
                 logger.warning("No markdown files found to index")
@@ -239,12 +269,17 @@ async def main():
         "--docs-path",
         type=str,
         required=True,
-        help="Path to the docs directory (e.g., ../physical-ai-textbook/docs/)"
+        help="Path to docs directory (e.g., ../physical-ai-textbook/docs/)"
     )
     parser.add_argument(
         "--week",
         type=int,
-        help="Index only a specific week (optional)"
+        help="Index only a specific week (e.g., 1, 2, 3)"
+    )
+    parser.add_argument(
+        "--module",
+        type=str,
+        help="Index only a specific module (e.g., 'ros2', 'gazebo', 'isaac')"
     )
 
     args = parser.parse_args()
@@ -261,22 +296,27 @@ async def main():
     logger.info(f"Docs path: {docs_path}")
     if args.week:
         logger.info(f"Week filter: {args.week}")
+    if args.module:
+        logger.info(f"Module filter: {args.module}")
     logger.info("=" * 60)
 
     indexer = DocumentIndexer()
 
-    success = await indexer.index_all(docs_path, week_filter=args.week)
+    success = await indexer.index_all(docs_path, week_filter=args.week, module_filter=args.module)
 
     indexer.print_summary()
 
     if success and indexer.stats["chunks_indexed"] > 0:
-        logger.info("\n✅ Indexing completed successfully!")
-        logger.info("\nNext steps:")
+        logger.info("")
+        logger.info("Indexing completed successfully!")
+        logger.info("")
+        logger.info("Next steps:")
         logger.info("  1. Start backend: uvicorn rag_backend.main:app --reload")
         logger.info("  2. Test query: curl -X POST http://localhost:8000/api/chat/query")
         sys.exit(0)
     else:
-        logger.error("\n❌ Indexing failed or no documents indexed!")
+        logger.error("")
+        logger.error("Indexing failed or no documents indexed!")
         sys.exit(1)
 
 

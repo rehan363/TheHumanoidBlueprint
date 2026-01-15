@@ -27,7 +27,7 @@ def get_gemini_client() -> AsyncOpenAI:
     """Get AsyncOpenAI client configured for Gemini API."""
     return AsyncOpenAI(
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-        api_key=settings.gemini_api_key
+        api_key=settings.orchestrator_api_key
     )
 
 
@@ -108,10 +108,10 @@ The system will automatically route to that agent."""
         name="RAG Orchestrator",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-1.5-flash",
+            model="gemini-2.0-flash-exp",
             openai_client=get_gemini_client()
         ),
-        functions=[
+        handoffs=[
             handoff(sub_agents["retrieval"]),
             handoff(sub_agents["explanation"]),
             handoff(sub_agents["comparison"]),

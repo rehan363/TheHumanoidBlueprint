@@ -17,7 +17,7 @@ class EmbeddingService:
     def __init__(self):
         """Initialize the embedding service with Google Generative AI."""
         try:
-            genai.configure(api_key=settings.gemini_api_key)
+            genai.configure(api_key=settings.embedding_api_key)
             self.model_name = settings.gemini_embedding_model
             logger.info(f"EmbeddingService initialized with model: {self.model_name}")
         except Exception as e:

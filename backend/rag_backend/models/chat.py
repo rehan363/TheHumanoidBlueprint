@@ -63,6 +63,11 @@ class ChatQueryResponse(BaseModel):
     processing_time_ms: Optional[int] = Field(None, description="Time taken to process query (milliseconds)")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Response timestamp")
 
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
 
 class ErrorResponse(BaseModel):
     """Error response model."""
@@ -71,3 +76,8 @@ class ErrorResponse(BaseModel):
     message: str = Field(..., description="Human-readable error message")
     details: Optional[dict] = Field(None, description="Additional error details")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Error timestamp")
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }

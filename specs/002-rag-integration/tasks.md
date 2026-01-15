@@ -25,11 +25,11 @@ This is a web app with:
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create backend directory structure per plan.md (backend/src/, backend/scripts/, backend/tests/, backend/data/)
-- [ ] T002 Initialize Python project with requirements.txt (FastAPI 0.115+, Qdrant Client 1.7+, LiteLLM 1.50+, Google GenerativeAI SDK 0.8+, slowapi, asyncpg, pytest)
-- [ ] T003 [P] Create .env.example file in backend/ with all required environment variables (GEMINI_API_KEY, QDRANT_URL, QDRANT_API_KEY, NEON_DATABASE_URL)
-- [ ] T004 [P] Create backend/README.md with setup instructions from quickstart.md
-- [ ] T005 [P] Configure CORS in backend/src/main.py with allowed origins from contracts/chat-api.md
+- [x] T001 Create backend directory structure per plan.md (backend/src/, backend/scripts/, backend/tests/, backend/data/)
+- [x] T002 Initialize Python project with requirements.txt (FastAPI 0.115+, Qdrant Client 1.7+, LiteLLM 1.50+, Google GenerativeAI SDK 0.8+, slowapi, asyncpg, pytest)
+- [x] T003 [P] Create .env.example file in backend/ with all required environment variables (GEMINI_API_KEY, QDRANT_URL, QDRANT_API_KEY, NEON_DATABASE_URL)
+- [x] T004 [P] Create backend/README.md with setup instructions from quickstart.md
+- [x] T005 [P] Configure CORS in backend/src/main.py with allowed origins from contracts/chat-api.md
 
 ---
 
@@ -39,22 +39,22 @@ This is a web app with:
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create backend/src/config.py for environment variable management and settings
-- [ ] T007 [P] Create Pydantic models in backend/src/models/chat.py (ChatQueryRequest, ChatQueryResponse, Citation, SelectedTextContext, ErrorResponse)
-- [ ] T008 [P] Create Pydantic models in backend/src/models/chunk.py (TextChunk, ChunkMetadata)
-- [ ] T009 [P] Create Pydantic models in backend/src/models/health.py (HealthCheckResponse)
-- [ ] T010 Create backend/src/utils/error_handlers.py for custom exception handling (RateLimitExceeded, ServiceUnavailable, InvalidRequest)
-- [ ] T011 [P] Create backend/src/utils/rate_limiter.py with slowapi configuration (3 req/min per IP)
-- [ ] T012 Implement backend/src/services/embedding_service.py using Google gemini-embedding-001 for vector generation
-- [ ] T013 Implement backend/src/services/vector_store.py as Qdrant client wrapper with collection setup (cosine similarity, 768 dimensions)
-- [ ] T014 Create backend/scripts/setup_qdrant.py to initialize Qdrant collection with indexed payload fields (week, module)
-- [ ] T015 Implement backend/src/utils/chunking.py with MarkdownHeaderTextSplitter (512-768 tokens, 10-20% overlap)
-- [ ] T016 Create backend/scripts/index_docs.py CLI tool to index documentation from physical-ai-textbook/docs/
-- [ ] T017 Implement backend/src/services/llm_service.py with LiteLLM + Gemini integration, LRU caching (100 entries), exponential backoff
-- [ ] T018 Implement backend/src/services/rag_pipeline.py orchestrating retrieval (Qdrant) + generation (Gemini) with citation extraction
-- [ ] T019 Create FastAPI app entry point in backend/src/main.py with CORS, rate limiting, error handlers
-- [ ] T020 Create backend/src/routers/health.py with GET /api/health endpoint per contracts/chat-api.md
-- [ ] T021 [P] Create backend/data/index_metadata.json file structure for indexing state tracking
+- [x] T006 Create backend/src/config.py for environment variable management and settings
+- [x] T007 [P] Create Pydantic models in backend/src/models/chat.py (ChatQueryRequest, ChatQueryResponse, Citation, SelectedTextContext, ErrorResponse)
+- [x] T008 [P] Create Pydantic models in backend/src/models/chunk.py (TextChunk, ChunkMetadata)
+- [x] T009 [P] Create Pydantic models in backend/src/models/health.py (HealthCheckResponse)
+- [x] T010 Create backend/src/utils/error_handlers.py for custom exception handling (RateLimitExceeded, ServiceUnavailable, InvalidRequest)
+- [x] T011 [P] Create backend/src/utils/rate_limiter.py with slowapi configuration (3 req/min per IP)
+- [x] T012 Implement backend/src/services/embedding_service.py using Google gemini-embedding-001 for vector generation
+- [x] T013 Implement backend/src/services/vector_store.py as Qdrant client wrapper with collection setup (cosine similarity, 768 dimensions)
+- [x] T014 Create backend/scripts/setup_qdrant.py to initialize Qdrant collection with indexed payload fields (week, module)
+- [x] T015 Implement backend/src/utils/chunking.py with MarkdownHeaderTextSplitter (512-768 tokens, 10-20% overlap)
+- [x] T016 Create backend/scripts/index_docs.py CLI tool to index documentation from physical-ai-textbook/docs/
+- [x] T017 Implement backend/src/services/llm_service.py with LiteLLM + Gemini integration, LRU caching (100 entries), exponential backoff
+- [x] T018 Implement backend/src/services/rag_pipeline.py orchestrating retrieval (Qdrant) + generation (Gemini) with citation extraction
+- [x] T019 Create FastAPI app entry point in backend/src/main.py with CORS, rate limiting, error handlers
+- [x] T020 Create backend/src/routers/health.py with GET /api/health endpoint per contracts/chat-api.md
+- [x] T021 [P] Create backend/data/index_metadata.json file structure for indexing state tracking
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -68,27 +68,27 @@ This is a web app with:
 
 ### Implementation for User Story 1
 
-- [ ] T022 [US1] Implement POST /api/chat/query endpoint in backend/src/routers/chat.py for full_text query_type
-- [ ] T023 [US1] Add query validation in backend/src/routers/chat.py (1-500 chars, sanitization)
-- [ ] T024 [US1] Integrate RAG pipeline in backend/src/routers/chat.py (call embedding_service → vector_store → llm_service)
-- [ ] T025 [US1] Implement citation formatting in backend/src/services/rag_pipeline.py with chunk_index positioning ("[Week X, Section Y, Part N of M]")
-- [ ] T026 [US1] Add fallback message handling in backend/src/routers/chat.py for queries with no relevant content ("I couldn't find information about that in the textbook")
-- [ ] T027 [US1] Add rate limiting to /api/chat/query endpoint (3 req/min per IP)
-- [ ] T028 [US1] Add error handling for 429, 503, 500 responses per contracts/chat-api.md
-- [ ] T029 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/index.tsx (main chat widget with floating action button)
-- [ ] T030 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/ChatModal.tsx (modal dialog)
-- [ ] T031 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/MessageList.tsx (chat history display)
-- [ ] T032 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/QueryInput.tsx (user input field with debouncing)
-- [ ] T033 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/Citation.tsx (source citation display)
-- [ ] T034 [P] [US1] Create TypeScript interfaces in physical-ai-textbook/src/components/RAGChatbot/types.ts (ChatMessage, Citation, QueryRequest, QueryResponse)
-- [ ] T035 [P] [US1] Create CSS module physical-ai-textbook/src/components/RAGChatbot/styles.module.css for component styling
-- [ ] T036 [US1] Create custom hook physical-ai-textbook/src/hooks/useChatAPI.ts for API client (fetch /api/chat/query)
-- [ ] T037 [US1] Create custom hook physical-ai-textbook/src/hooks/useSessionStorage.ts for chat history persistence
-- [ ] T038 [US1] Swizzle Root component in physical-ai-textbook/src/theme/Root.tsx to add global chat widget
-- [ ] T039 [US1] Configure API proxy in physical-ai-textbook/docusaurus.config.ts (/api → http://localhost:8000/api)
-- [ ] T040 [US1] Add graceful degradation in useChatAPI.ts (handle 503, display "AI assistant temporarily offline")
-- [ ] T041 [US1] Add client-side rate limiting in useChatAPI.ts (3 req/min, display countdown timer on 429)
-- [ ] T042 [US1] Add loading states and error messages in ChatModal.tsx
+- [x] T022 [US1] Implement POST /api/chat/query endpoint in backend/src/routers/chat.py for full_text query_type
+- [x] T023 [US1] Add query validation in backend/src/routers/chat.py (1-500 chars, sanitization)
+- [x] T024 [US1] Integrate RAG pipeline in backend/src/routers/chat.py (call embedding_service → vector_store → llm_service)
+- [x] T025 [US1] Implement citation formatting in backend/src/services/rag_pipeline.py with chunk_index positioning ("[Week X, Section Y, Part N of M]")
+- [x] T026 [US1] Add fallback message handling in backend/src/routers/chat.py for queries with no relevant content ("I couldn't find information about that in the textbook")
+- [x] T027 [US1] Add rate limiting to /api/chat/query endpoint (3 req/min per IP)
+- [x] T028 [US1] Add error handling for 429, 503, 500 responses per contracts/chat-api.md
+- [x] T029 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/index.tsx (main chat widget with floating action button)
+- [x] T030 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/ChatModal.tsx (modal dialog)
+- [x] T031 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/MessageList.tsx (chat history display)
+- [x] T032 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/QueryInput.tsx (user input field with debouncing)
+- [x] T033 [P] [US1] Create React component physical-ai-textbook/src/components/RAGChatbot/Citation.tsx (source citation display)
+- [x] T034 [P] [US1] Create TypeScript interfaces in physical-ai-textbook/src/components/RAGChatbot/types.ts (ChatMessage, Citation, QueryRequest, QueryResponse)
+- [x] T035 [P] [US1] Create CSS module physical-ai-textbook/src/components/RAGChatbot/styles.module.css for component styling
+- [x] T036 [US1] Create custom hook physical-ai-textbook/src/hooks/useChatAPI.ts for API client (fetch /api/chat/query)
+- [x] T037 [US1] Create custom hook physical-ai-textbook/src/hooks/useSessionStorage.ts for chat history persistence
+- [x] T038 [US1] Swizzle Root component in physical-ai-textbook/src/theme/Root.tsx to add global chat widget
+- [x] T039 [US1] Configure API proxy in physical-ai-textbook/docusaurus.config.ts (/api → http://localhost:8000/api)
+- [x] T040 [US1] Add graceful degradation in useChatAPI.ts (handle 503, display "AI assistant temporarily offline")
+- [x] T041 [US1] Add client-side rate limiting in useChatAPI.ts (3 req/min, display countdown timer on 429)
+- [x] T042 [US1] Add loading states and error messages in ChatModal.tsx
 - [ ] T043 [US1] Test full query flow: frontend → backend → Qdrant → Gemini → response with citations
 
 **Checkpoint**: At this point, User Story 1 (core RAG chatbot) should be fully functional and testable independently. Students can ask questions and receive cited answers.
@@ -103,14 +103,14 @@ This is a web app with:
 
 ### Implementation for User Story 2
 
-- [ ] T044 [US2] Update POST /api/chat/query endpoint in backend/src/routers/chat.py to handle text_selection query_type with context parameter
-- [ ] T045 [US2] Implement context validation in backend/src/routers/chat.py (text, file_path, selection_range required when query_type is text_selection)
-- [ ] T046 [US2] Enhance RAG pipeline in backend/src/services/rag_pipeline.py to prepend selected text to prompt for context-aware generation
-- [ ] T047 [US2] Add special citation handling for selected text in backend/src/services/rag_pipeline.py ("[Selected Text, Week X]" with relevance_score 1.0)
-- [ ] T048 [P] [US2] Create custom hook physical-ai-textbook/src/hooks/useTextSelection.ts to track user text selection on documentation pages
-- [ ] T049 [US2] Add "Ask AI about this" button in physical-ai-textbook/src/components/RAGChatbot/index.tsx that appears on text selection
-- [ ] T050 [US2] Update useChatAPI.ts in physical-ai-textbook/src/hooks/ to support text_selection query_type with context parameter
-- [ ] T051 [US2] Update QueryInput.tsx to pre-fill with selected text context when "Ask AI about this" is clicked
+- [x] T044 [US2] Update POST /api/chat/query endpoint in backend/src/routers/chat.py to handle text_selection query_type with context parameter
+- [x] T045 [US2] Implement context validation in backend/src/routers/chat.py (text, file_path, selection_range required when query_type is text_selection)
+- [x] T046 [US2] Enhance RAG pipeline in backend/src/services/rag_pipeline.py to prepend selected text to prompt for context-aware generation
+- [x] T047 [US2] Add special citation handling for selected text in backend/src/services/rag_pipeline.py ("[Selected Text, Week X]" with relevance_score 1.0)
+- [x] T048 [P] [US2] Create custom hook physical-ai-textbook/src/hooks/useTextSelection.ts to track user text selection on documentation pages
+- [x] T049 [US2] Add "Ask AI about this" button in physical-ai-textbook/src/components/RAGChatbot/index.tsx that appears on text selection
+- [x] T050 [US2] Update useChatAPI.ts in physical-ai-textbook/src/hooks/ to support text_selection query_type with context parameter
+- [x] T051 [US2] Update QueryInput.tsx to pre-fill with selected text context when "Ask AI about this" is clicked
 - [ ] T052 [US2] Test text selection flow: select text → click button → query sent with context → response includes selected text citation
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. Students can ask general questions AND get help with specific selected text.

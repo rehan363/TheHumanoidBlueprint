@@ -4,6 +4,7 @@
 
 import React, { useEffect, useCallback } from 'react';
 import type { ChatMessage } from './types';
+import type { SelectionData } from '../../hooks/useTextSelection';
 import { MessageList } from './MessageList';
 import { QueryInput } from './QueryInput';
 import styles from './styles.module.css';
@@ -16,6 +17,7 @@ interface ChatModalProps {
   error: string | null;
   onSubmitQuery: (query: string) => void;
   rateLimitSeconds: number;
+  selection: SelectionData | null;
 }
 
 export const ChatModal: React.FC<ChatModalProps> = ({
@@ -26,6 +28,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
   error,
   onSubmitQuery,
   rateLimitSeconds,
+  selection,
 }) => {
   // Close on Escape key
   const handleKeyDown = useCallback(
@@ -90,6 +93,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({
           isLoading={isLoading}
           disabled={!!error}
           rateLimitSeconds={rateLimitSeconds}
+          selection={selection}
         />
       </div>
     </div>

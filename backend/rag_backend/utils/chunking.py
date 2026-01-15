@@ -145,7 +145,7 @@ class MarkdownChunker:
                     module=metadata_base["module"],
                     file_path=metadata_base["file_path"],
                     chunk_index=chunk_index,
-                    total_chunks=0,  # Will be updated after all chunks are created
+                    total_chunks=1,  # Placeholder, will be updated after all chunks are created
                     heading_path=heading_path
                 )
 

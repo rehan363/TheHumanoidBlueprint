@@ -194,14 +194,14 @@ class VectorStore:
                     ]
                 )
 
-            search_result = self.client.search(
+            search_result = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_embedding,
+                query=query_embedding,
                 limit=top_k,
                 score_threshold=score_threshold,
                 query_filter=query_filter,
                 with_payload=True
-            )
+            ).points
 
             results = []
             for scored_point in search_result:

@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
+import type { SelectionData } from '../../hooks/useTextSelection';
 import styles from './styles.module.css';
 
 interface QueryInputProps {
@@ -11,6 +12,7 @@ interface QueryInputProps {
   disabled?: boolean;
   placeholder?: string;
   rateLimitSeconds?: number;
+  selection: SelectionData | null;
 }
 
 export const QueryInput: React.FC<QueryInputProps> = ({
@@ -19,9 +21,22 @@ export const QueryInput: React.FC<QueryInputProps> = ({
   disabled = false,
   placeholder = 'Ask a question about the textbook...',
   rateLimitSeconds = 0,
+  selection,
 }) => {
   const [query, setQuery] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Pre-fill and focus when a text selection is made
+  useEffect(() => {
+    if (selection && textareaRef.current) {
+      const newQuery = `What does this mean: "${selection.text}"?`;
+      setQuery(newQuery);
+      textareaRef.current.focus();
+      // Auto-resize textarea
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [selection]);
 
   const handleSubmit = () => {
     const trimmedQuery = query.trim();

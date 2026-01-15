@@ -405,3 +405,27 @@
     max-width: 85%;
   }
 }
+
+/* Text Selection Button */
+.selectionButton {
+  position: absolute;
+  background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1002; /* Above content, below modal */
+  transition: transform 0.1s;
+}
+
+.selectionButton:hover {
+  transform: scale(1.05);
+}
+
+.selectionButton:active {
+  transform: scale(0.98);
+}
