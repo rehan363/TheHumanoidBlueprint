@@ -148,12 +148,12 @@ This is a web app with:
 - [x] T067 Create database migration script backend/scripts/setup_database.py with query_sessions and session_messages table schemas from data-model.md
 - [x] T068 [P] Create backend/src/models/session.py with Pydantic models (QuerySession, SessionMessage)
 - [x] T069 Implement session creation in backend/src/services/database_service.py (generate anonymous session_token)
-- [ ] T070 Implement message persistence in backend/src/services/database_service.py (save user and assistant messages)
-- [ ] T071 Implement message retrieval in backend/src/services/database_service.py (get session history by token)
-- [ ] T072 Update POST /api/chat/query in backend/src/routers/chat.py to persist messages to database after response
-- [ ] T073 Add session_id parameter to ChatQueryRequest in backend/src/models/chat.py (optional, auto-generated if missing)
-- [ ] T074 Update useChatAPI.ts in physical-ai-textbook/src/hooks/ to include session_id in requests
-- [ ] T075 Generate and store anonymous session_token in sessionStorage on first query
+- [x] T070 Implement message persistence in backend/src/services/database_service.py (save user and assistant messages)
+- [x] T071 Implement message retrieval in backend/src/services/database_service.py (get session history by token)
+- [x] T072 Update POST /api/chat/query in backend/src/routers/chat.py to persist messages to database after response
+- [x] T073 Add session_id parameter to ChatQueryRequest in backend/src/models/chat.py (optional, auto-generated if missing)
+- [x] T074 Update useChatAPI.ts in physical-ai-textbook/src/hooks/ to include session_id in requests
+- [x] T075 Generate and store anonymous session_token in sessionStorage on first query
 - [ ] T076 Add GET /api/chat/history endpoint in backend/src/routers/chat.py to retrieve conversation history by session_token
 - [ ] T077 Update useSessionStorage.ts to fetch history from /api/chat/history on mount (fallback to sessionStorage if offline)
 - [ ] T078 Test database persistence: ask questions → refresh page → verify history loaded from database

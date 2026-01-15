@@ -2,6 +2,21 @@
  * Custom hook for chat API client with error handling, rate limiting, and session persistence.
  */
 
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { ChatMessage, QueryRequest, QueryResponse, ErrorResponse } from '../components/RAGChatbot/types';
+
+// Simple UUID generator for session_id
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+/**
+ * Custom hook for chat API client with error handling, rate limiting, and session persistence.
+ */
+
 interface UseChatAPIReturn {
   isLoading: boolean;
   error: string | null;
@@ -17,6 +32,16 @@ export function useChatAPI(messages: ChatMessage[], setMessages: (newMessages: C
   const [error, setError] = useState<string | null>(null);
   const [rateLimitSeconds, setRateLimitSeconds] = useState(0);
   const rateLimitTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let currentSessionId = sessionStorage.getItem('sessionId');
+    if (!currentSessionId) {
+      currentSessionId = uuidv4();
+      sessionStorage.setItem('sessionId', currentSessionId);
+    }
+    setSessionId(currentSessionId);
+  }, []);
 
   // Start rate limit countdown
   const startRateLimitCountdown = useCallback((seconds: number) => {
@@ -61,6 +86,7 @@ export function useChatAPI(messages: ChatMessage[], setMessages: (newMessages: C
           query,
           query_type: queryType,
           context,
+          session_id: sessionId, // Add session_id to the request
         };
 
         const response = await fetch(`${API_BASE_URL}/query`, {
@@ -123,7 +149,7 @@ export function useChatAPI(messages: ChatMessage[], setMessages: (newMessages: C
         setIsLoading(false);
       }
     },
-    [startRateLimitCountdown, messages, setMessages]
+    [startRateLimitCountdown, messages, setMessages, sessionId]
   );
 
   const clearError = useCallback(() => {
