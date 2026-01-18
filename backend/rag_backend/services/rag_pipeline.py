@@ -5,6 +5,7 @@ RAG pipeline orchestrating retrieval and generation.
 from typing import List, Optional, Tuple
 import time
 import logging
+import uuid
 from rag_backend.services.embedding_service import get_embedding_service
 from rag_backend.services.vector_store import get_vector_store
 from rag_backend.services.llm_service_multi import get_llm_service

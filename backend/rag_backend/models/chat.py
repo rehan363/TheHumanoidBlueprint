@@ -75,6 +75,7 @@ class ErrorResponse(BaseModel):
     error: str = Field(..., description="Error type")
     message: str = Field(..., description="Human-readable error message")
     details: Optional[dict] = Field(None, description="Additional error details")
+    request_id: Optional[str] = Field(None, description="Unique identifier for the request")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Error timestamp")
 
     class Config:

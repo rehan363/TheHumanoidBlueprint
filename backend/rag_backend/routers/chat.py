@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 from uuid import UUID
 from typing import List, Optional
+from fastapi import APIRouter, status, Request, Response, HTTPException
 
 from rag_backend.models.chat import ChatQueryRequest, ChatQueryResponse, Citation
 from rag_backend.models.session import QuerySession, SessionMessage
@@ -13,7 +14,7 @@ from rag_backend.utils.error_handlers import (
     RateLimitExceeded,
     ServiceUnavailable
 )
-from backend.src.services.database_service import db_service # Import db_service
+from src.services.database_service import db_service # Import db_service
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -62,10 +63,11 @@ async def query_chatbot(request: Request, response: Response, query_request: Cha
         if not query_request.query:
             raise InvalidRequest("Query cannot be empty after sanitization")
 
-        # Log query
+        # Log query start
         logger.info(
-            f"Processing {query_request.query_type} query from {request.client.host}: "
-            f"{query_request.query[:50]}..."
+            f"Query Start: type={query_request.query_type}, "
+            f"preview='{query_request.query[:50]}...', "
+            f"session_id={query_request.session_id or 'new'}"
         )
 
         # Handle session: get existing or create new
@@ -77,20 +79,26 @@ async def query_chatbot(request: Request, response: Response, query_request: Cha
             logger.info(f"Created new session: {session_id}")
 
         # Persist user message
+        db_start = time.perf_counter()
         await db_service.save_message(
             session_id=session_id,
             role='user',
             content=query_request.query,
             query_type=query_request.query_type
         )
+        logger.debug(f"Saved user message to DB in {time.perf_counter() - db_start:.4f}s")
 
         # Get RAG pipeline
         rag_pipeline = get_rag_pipeline()
 
         # Process query through RAG pipeline
+        logger.info(f"Processing query through RAG pipeline for session {session_id}")
+        rag_start = time.perf_counter()
         result = await rag_pipeline.process_query(query_request)
+        logger.info(f"RAG pipeline completed in {time.perf_counter() - rag_start:.4f}s")
 
         # Persist assistant message
+        db_start = time.perf_counter()
         await db_service.save_message(
             session_id=session_id,
             role='assistant',
@@ -98,9 +106,11 @@ async def query_chatbot(request: Request, response: Response, query_request: Cha
             citations=result.citations,
             query_type=query_request.query_type
         )
+        logger.debug(f"Saved assistant message to DB in {time.perf_counter() - db_start:.4f}s")
 
+        total_time = (time.time() - start_time) * 1000
         logger.info(
-            f"Query processed successfully in {result.processing_time_ms}ms "
+            f"Query processed successfully in {total_time:.2f}ms "
             f"with {len(result.citations)} citations for session {session_id}"
         )
 
@@ -110,25 +120,25 @@ async def query_chatbot(request: Request, response: Response, query_request: Cha
             citations=result.citations,
             query_type=query_request.query_type,
             session_id=session_id,
-            processing_time_ms=result.processing_time_ms,
+            processing_time_ms=int(total_time),
             timestamp=datetime.utcnow(),
         )
         return chat_response
 
     except InvalidRequest as e:
-        logger.warning(f"Invalid request: {e.message}")
+        logger.warning(f"Invalid request stage=validation: {e.message}, details={e.details}")
         raise
 
     except RateLimitExceeded as e:
-        logger.warning(f"Rate limit exceeded for {request.client.host}")
+        logger.warning(f"Rate limit exceeded for host={request.client.host}")
         raise
 
     except ServiceUnavailable as e:
-        logger.error(f"Service unavailable: {e.message}")
+        logger.error(f"Service unavailable service={e.service_name}: {e.message}")
         raise
 
     except Exception as e:
-        logger.exception(f"Unexpected error processing query for session {session_id}: {e}")
+        logger.exception(f"Unexpected error processing query for session {session_id}: {str(e)}")
         raise ServiceUnavailable("rag_system", "An unexpected error occurred while processing your query")
 
 @router.get(

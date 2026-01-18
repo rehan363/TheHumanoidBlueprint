@@ -96,7 +96,7 @@ class VectorStore:
             # Create payload indexes for filtering
             self.client.create_payload_index(
                 collection_name=self.collection_name,
-                field_name="week",
+                field_name="chapter",
                 field_schema="integer"
             )
 
@@ -143,7 +143,7 @@ class VectorStore:
 
                 payload = {
                     "content": chunk.content,
-                    "week": chunk.metadata.week,
+                    "chapter": chunk.metadata.week,  # Using metadata.week as chapter number
                     "module": chunk.metadata.module,
                     "file_path": chunk.metadata.file_path,
                     "chunk_index": chunk.metadata.chunk_index,
@@ -205,13 +205,13 @@ class VectorStore:
             top_k = top_k or settings.top_k_results
             score_threshold = score_threshold or settings.similarity_threshold
 
-            # Build filter if week is specified
+            # Build filter if chapter is specified
             query_filter = None
             if week_filter is not None:
                 query_filter = Filter(
                     must=[
                         FieldCondition(
-                            key="week",
+                            key="chapter",
                             match=MatchValue(value=week_filter)
                         )
                     ]
@@ -232,7 +232,7 @@ class VectorStore:
                     "id": scored_point.id,
                     "score": scored_point.score,
                     "content": scored_point.payload.get("content", ""),
-                    "week": scored_point.payload.get("week"),
+                    "chapter": scored_point.payload.get("chapter"),
                     "module": scored_point.payload.get("module", ""),
                     "file_path": scored_point.payload.get("file_path", ""),
                     "chunk_index": scored_point.payload.get("chunk_index", 0),
@@ -303,9 +303,8 @@ class VectorStore:
             collection_info = self.client.get_collection(self.collection_name)
             return {
                 "collection_name": self.collection_name,
-                "vectors_count": collection_info.vectors_count,
                 "points_count": collection_info.points_count,
-                "status": collection_info.status.value
+                "status": collection_info.status.value if hasattr(collection_info.status, 'value') else str(collection_info.status)
             }
         except Exception as e:
             logger.error(

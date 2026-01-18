@@ -2,27 +2,35 @@
 FastAPI application entry point for RAG backend.
 """
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 import logging
 import sys
+import time
 
 from rag_backend.config import settings
 from rag_backend.routers import health_router, chat_router
 from rag_backend.utils.rate_limiter import limiter
 from rag_backend.utils.error_handlers import register_exception_handlers
+from rag_backend.utils.logging_utils import set_request_id, RequestIdFilter, get_request_id
+import uuid
 
 # Configure logging
+log_format = '%(asctime)s - %(name)s - %(levelname)s - [%(request_id)s] - %(message)s'
 logging.basicConfig(
     level=getattr(logging, settings.log_level.upper()),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format=log_format,
     handlers=[
         logging.StreamHandler(sys.stdout)
     ]
 )
+
+# Add RequestIdFilter to the root logger
+for handler in logging.root.handlers:
+    handler.addFilter(RequestIdFilter())
 
 logger = logging.getLogger(__name__)
 
@@ -61,8 +69,13 @@ async def log_requests(request: Request, call_next):
     """
     Log all incoming requests and outgoing responses, including processing time
     and response body for error statuses.
+    Assumes a request ID is generated/set for each request.
     """
-    start_time = time.perf_counter() # Use time.perf_counter for higher resolution timing
+    # Generate or get request ID from headers
+    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+    set_request_id(request_id)
+
+    start_time = time.perf_counter()
 
     # Log incoming request details
     logger.info(
@@ -95,12 +108,24 @@ async def log_requests(request: Request, call_next):
             except UnicodeDecodeError:
                 log_message += f" - Body: (non-text content)"
 
-            logger.error(log_message)
-            return Response(content=response_body, status_code=response.status_code, headers=dict(response.headers))
+            if response.status_code >= 500:
+                logger.error(log_message)
+            else:
+                logger.warning(log_message)
+            
+            # Re-generate the response since the body iterator was consumed
+            response = Response(
+                content=response_body,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
         else:
             logger.info(log_message)
 
+        # Add Request ID to response headers
+        response.headers["X-Request-ID"] = request_id
         return response
+
     except Exception as e:
         process_time = time.perf_counter() - start_time
         formatted_process_time = f"{process_time:.4f}s"
@@ -108,6 +133,7 @@ async def log_requests(request: Request, call_next):
             f"Request Failed: {request.client.host}:{request.client.port} "
             f"{request.method} {request.url.path} - Took {formatted_process_time} - Error: {e}"
         )
+        # Re-raise the exception, it will be caught by the general_exception_handler
         raise
 
 

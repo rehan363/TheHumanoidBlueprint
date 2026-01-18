@@ -41,6 +41,7 @@ class EmbeddingService:
         Raises:
             EmbeddingGenerationError: If embedding generation fails
         """
+        logger.info(f"Generating embedding for text length: {len(text)}")
         try:
             if not text or not text.strip():
                 raise EmbeddingGenerationError("Cannot generate embedding for empty text")

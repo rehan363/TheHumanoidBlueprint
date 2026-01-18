@@ -64,6 +64,8 @@ class LLMGenerationError(Exception):
         super().__init__(self.message)
 
 
+from rag_backend.utils.logging_utils import get_request_id
+
 # Exception Handlers
 
 async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
@@ -74,6 +76,7 @@ async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) 
         error="rate_limit_exceeded",
         message=exc.message,
         details={"retry_after": exc.retry_after},
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
@@ -92,6 +95,7 @@ async def service_unavailable_handler(request: Request, exc: ServiceUnavailable)
         error="service_unavailable",
         message="AI assistant temporarily offline. Browse content normally.",
         details={"service": exc.service_name},
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
@@ -109,6 +113,7 @@ async def invalid_request_handler(request: Request, exc: InvalidRequest) -> JSON
         error="invalid_request",
         message=exc.message,
         details=exc.details,
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
@@ -125,6 +130,7 @@ async def embedding_generation_error_handler(request: Request, exc: EmbeddingGen
     error_response = ErrorResponse(
         error="embedding_error",
         message="Failed to process your query. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
@@ -141,6 +147,7 @@ async def vector_search_error_handler(request: Request, exc: VectorSearchError) 
     error_response = ErrorResponse(
         error="search_error",
         message="Failed to search textbook content. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
@@ -157,6 +164,7 @@ async def llm_generation_error_handler(request: Request, exc: LLMGenerationError
     error_response = ErrorResponse(
         error="generation_error",
         message="Failed to generate response. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
@@ -173,6 +181,7 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
     error_response = ErrorResponse(
         error="internal_error",
         message="An unexpected error occurred. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 

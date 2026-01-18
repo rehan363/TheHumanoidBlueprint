@@ -40,13 +40,8 @@ async def setup_collection():
             stats = await vector_store.get_collection_stats()
             logger.info(f"Collection stats: {stats}")
 
-            response = input("\nCollection exists. Recreate? (y/N): ")
-            if response.lower() != 'y':
-                logger.info("Setup cancelled. Using existing collection.")
-                return True
-
-            # Delete existing collection
-            logger.info("Deleting existing collection...")
+            # Delete existing collection forcefully for setup
+            logger.info("Deleting existing collection to reset schema...")
             vector_store.client.delete_collection(settings.qdrant_collection_name)
             logger.info("Existing collection deleted")
 
@@ -59,7 +54,7 @@ async def setup_collection():
             logger.info(f"   Collection name: {settings.qdrant_collection_name}")
             logger.info(f"   Vector size: {settings.qdrant_vector_size}")
             logger.info(f"   Distance metric: COSINE")
-            logger.info(f"   Indexed fields: week, module")
+            logger.info(f"   Indexed fields: chapter, module")
 
             # Verify collection
             stats = await vector_store.get_collection_stats()

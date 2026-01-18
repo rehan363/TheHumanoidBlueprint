@@ -145,21 +145,19 @@ class MarkdownChunker:
                     module=metadata_base["module"],
                     file_path=metadata_base["file_path"],
                     chunk_index=chunk_index,
-                    total_chunks=1,  # Placeholder, will be updated after all chunks are created
+                    total_chunks=1,
                     heading_path=heading_path
                 )
 
-                # Generate chunk ID
                 chunk_id = self._generate_chunk_id(
                     metadata_base["file_path"],
                     chunk_index
                 )
 
-                # Create TextChunk
                 chunk = TextChunk(
                     chunk_id=chunk_id,
                     content=chunk_text,
-                    embedding=None,  # Will be populated by embedding service
+                    embedding=None,
                     metadata=metadata,
                     token_count=self._estimate_tokens(chunk_text)
                 )
@@ -167,35 +165,43 @@ class MarkdownChunker:
                 chunks.append(chunk)
                 chunk_index += 1
 
-            # Move start position with overlap
+            # Move start position with overlap, but ENSURE it advances
+            prev_start = start
             start = end - self.chunk_overlap
+            
+            # Safety: Ensure we advance by at least half the min_chunk_size or 50 chars
+            if start <= prev_start:
+                start = end # No overlap if we didn't advance
 
-            # Avoid infinite loop
-            if start >= len(text):
+            if start >= len(text) or end >= len(text):
                 break
 
-        # Update total_chunks in all chunk metadata
+        # Update total_chunks
         total_chunks = len(chunks)
         for chunk in chunks:
             chunk.metadata.total_chunks = total_chunks
 
-        logger.info(f"Split text into {total_chunks} chunks (avg size: {sum(len(c.content) for c in chunks) // max(total_chunks, 1)} chars)")
+        logger.info(f"Split text into {total_chunks} chunks")
         return chunks
 
     def _generate_chunk_id(self, file_path: str, chunk_index: int) -> str:
         """
-        Generate unique chunk ID.
+        Generate unique chunk ID (Deterministic UUID).
 
         Args:
             file_path: Source file path
             chunk_index: Index of chunk in file
 
         Returns:
-            Unique chunk ID
+            Unique chunk ID string (UUID format)
         """
-        # Create hash from file path
-        path_hash = hashlib.md5(file_path.encode()).hexdigest()[:8]
-        return f"chunk_{path_hash}_{chunk_index}"
+        import uuid
+        # Create a deterministic namespace UUID
+        namespace = uuid.UUID('e8f4b00c-63b7-4c74-8968-3e4b706c9945')
+        # Create a unique string for the chunk
+        chunk_unique_string = f"{file_path}_{chunk_index}"
+        # Generate a deterministic UUID
+        return str(uuid.uuid5(namespace, chunk_unique_string))
 
     def _estimate_tokens(self, text: str) -> int:
         """
@@ -226,6 +232,7 @@ class MarkdownChunker:
             FileNotFoundError: If file doesn't exist
             Exception: If chunking fails
         """
+        logger.info(f"Chunking file: {file_path}")
         try:
             if not file_path.exists():
                 raise FileNotFoundError(f"File not found: {file_path}")
