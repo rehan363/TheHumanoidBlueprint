@@ -1,13 +1,13 @@
 ---
 sidebar_position: 3
-title: "Week 3: ROS 2 Introduction"
+title: "Chapter 3: ROS 2 Introduction"
 description: "Introduction to Robot Operating System 2, its architecture, and core concepts for building robotic applications"
 keywords: [ROS 2, robotics middleware, DDS, nodes, topics, services, ROS 2 Humble]
 last_updated: "2025-12-29"
 estimated_reading_time: 20
 ---
 
-# Week 3: ROS 2 Introduction
+# Chapter 3: ROS 2 Introduction
 
 ## Learning Objectives
 
@@ -554,7 +554,7 @@ This week, we introduced ROS 2—the essential middleware for modern robotics de
 5. **Development workflow**: Create workspace → Create packages → Build with colcon → Run nodes
 6. **Rich ecosystem**: RViz2, rqt, Gazebo, Nav2, MoveIt2 and thousands of community packages
 
-In Week 4, we'll dive deeper into nodes, topics, and services—writing our first ROS 2 programs in Python and C++.
+In Chapter 4, we'll dive deeper into nodes, topics, and services—writing our first ROS 2 programs in Python and C++.
 
 ---
 

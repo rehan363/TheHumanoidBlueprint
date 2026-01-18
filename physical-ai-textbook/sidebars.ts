@@ -1,4 +1,4 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from '@docusaurus/plugin-content-docs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -23,13 +23,13 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: '🤖 Module 1: ROS 2',
       collapsible: true,
-      collapsed: false, // Expanded by default for Week 1-2
+      collapsed: false, // Expanded by default for Chapter 1-2
       items: [
-        'module1-ros2/week1-foundations',
-        'module1-ros2/week2-landscape',
-        'module1-ros2/week3-ros2-intro',
-        'module1-ros2/week4-nodes-topics',
-        'module1-ros2/week5-urdf',
+        'module1-ros2/chapter1-foundations',
+        'module1-ros2/chapter2-landscape',
+        'module1-ros2/chapter3-ros2-intro',
+        'module1-ros2/chapter4-nodes-topics',
+        'module1-ros2/chapter5-urdf',
       ],
     },
     {
@@ -38,8 +38,8 @@ const sidebars: SidebarsConfig = {
       collapsible: true,
       collapsed: true, // Collapsed by default (placeholders)
       items: [
-        'module2-gazebo/week6-gazebo-setup',
-        'module2-gazebo/week7-unity',
+        'module2-gazebo/chapter6-gazebo-setup',
+        'module2-gazebo/chapter7-unity',
       ],
     },
     {
@@ -48,9 +48,9 @@ const sidebars: SidebarsConfig = {
       collapsible: true,
       collapsed: true,
       items: [
-        'module3-isaac/week8-isaac-sim',
-        'module3-isaac/week9-isaac-ros',
-        'module3-isaac/week10-nav2',
+        'module3-isaac/chapter8-isaac-sim',
+        'module3-isaac/chapter9-isaac-ros',
+        'module3-isaac/chapter10-nav2',
       ],
     },
     {
@@ -59,9 +59,9 @@ const sidebars: SidebarsConfig = {
       collapsible: true,
       collapsed: true,
       items: [
-        'module4-vla/week11-voice-action',
-        'module4-vla/week12-cognitive-planning',
-        'module4-vla/week13-capstone',
+        'module4-vla/chapter11-voice-action',
+        'module4-vla/chapter12-cognitive-planning',
+        'module4-vla/chapter13-capstone',
       ],
     },
   ],

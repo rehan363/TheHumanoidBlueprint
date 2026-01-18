@@ -90,7 +90,7 @@ class DocumentIndexer:
                 module_display = module_name_raw
 
             # Apply module filter
-            if module_filter is None or module_filter.lower() not in module_name_raw.lower():
+            if module_filter and module_filter.lower() not in module_name_raw.lower():
                 continue
 
             # Find all week files in this module
@@ -104,7 +104,7 @@ class DocumentIndexer:
                 week_num = int(match.group(1))
 
                 # Apply week filter
-                if week_filter is None or week_num != week_filter:
+                if week_filter and week_num != week_filter:
                     continue
 
                 # Get topic from filename (e.g., "week1-foundations.md" -> "foundations")

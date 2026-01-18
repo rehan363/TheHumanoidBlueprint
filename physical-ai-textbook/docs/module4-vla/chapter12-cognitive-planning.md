@@ -1,13 +1,13 @@
 ---
 sidebar_position: 12
-title: "Week 12 - Cognitive Planning with VLMs"
+title: "Chapter 12 - Cognitive Planning with VLMs"
 description: "Build intelligent robot planners using Vision-Language Models for scene understanding, task decomposition, and multi-modal reasoning"
 keywords: [VLM, cognitive planning, GPT-4V, Claude Vision, task planning, scene understanding, robotics, ROS 2, multi-modal AI]
 last_updated: "2025-12-30"
 estimated_reading_time: 32
 ---
 
-# Week 12: Cognitive Planning with VLMs
+# Chapter 12: Cognitive Planning with VLMs
 
 Welcome to the culmination of Vision-Language-Action integration! This chapter explores how Vision-Language Models (VLMs) enable robots to understand scenes, reason about tasks, and generate executable plans from natural language goals. We move beyond simple voice commands to sophisticated cognitive architectures that see, think, and act.
 
@@ -2071,7 +2071,7 @@ Cognitive planning with VLMs represents the frontier of robot intelligence, enab
 
 ## Next Week Preview
 
-In **Week 13**, we bring everything together in the **Capstone Project**:
+In **Chapter 13**, we bring everything together in the **Capstone Project**:
 - Integrating all modules: ROS 2, simulation, perception, navigation, and VLA
 - Building a complete Physical AI system
 - Testing, validation, and documentation

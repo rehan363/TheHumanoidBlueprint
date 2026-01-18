@@ -1,13 +1,13 @@
 ---
 sidebar_position: 6
-title: "Week 6 - Gazebo Simulation"
+title: "Chapter 6 - Gazebo Simulation"
 description: "Master Gazebo physics simulation for robotics development and testing"
 keywords: [Gazebo, physics simulation, robotics, virtual testing, ROS 2, digital twin]
 last_updated: "2025-12-29"
 estimated_reading_time: 20
 ---
 
-# Week 6: Gazebo Simulation
+# Chapter 6: Gazebo Simulation
 
 Welcome to Module 2! In this chapter, we transition from understanding robot descriptions (URDF) to bringing robots to life in a physics-accurate simulation environment. Gazebo is the industry-standard simulator that enables you to test robot behaviors without risking expensive hardware.
 
@@ -443,7 +443,7 @@ def generate_launch_description():
 
 ### Converting URDF to Gazebo-Compatible Format
 
-Your URDF from Week 5 needs additional Gazebo-specific elements:
+Your URDF from Chapter 5 needs additional Gazebo-specific elements:
 
 ```xml
 <robot name="my_humanoid">
@@ -586,7 +586,7 @@ Gazebo supports multiple physics engines:
 
 ### Common Simulated Sensors
 
-Gazebo can simulate all sensors we studied in Week 2:
+Gazebo can simulate all sensors we studied in Chapter 2:
 
 ```xml
 <!-- LIDAR Sensor -->
@@ -777,7 +777,7 @@ Simulation is the foundation of modern robotics development. Before any algorith
 
 ## Next Week Preview
 
-In **Week 7**, we'll explore **Unity for Robotics** - a powerful alternative for:
+In **Chapter 7**, we'll explore **Unity for Robotics** - a powerful alternative for:
 - Photorealistic rendering and synthetic data generation
 - Machine learning training environments
 - Human-robot interaction scenarios

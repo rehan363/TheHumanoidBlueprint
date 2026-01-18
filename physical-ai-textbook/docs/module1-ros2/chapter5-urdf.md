@@ -1,13 +1,13 @@
 ---
 sidebar_position: 5
-title: "Week 5: URDF for Humanoids"
+title: "Chapter 5: URDF for Humanoids"
 description: "Unified Robot Description Format for modeling humanoid robot kinematics, geometry, and visualization"
 keywords: [URDF, robot description, kinematics, robot modeling, humanoid robots, xacro]
 last_updated: "2025-12-29"
 estimated_reading_time: 22
 ---
 
-# Week 5: URDF for Humanoids
+# Chapter 5: URDF for Humanoids
 
 ## Learning Objectives
 
@@ -528,7 +528,7 @@ This week, we learned URDF for robot modeling:
 5. **Visualization**: Robot state publisher + RViz2 for viewing models
 6. **TF2**: Transform tree generated from URDF joint hierarchy
 
-In Week 6, we'll use our URDF models in Gazebo simulation—bringing our robots to life with physics!
+In Chapter 6, we'll use our URDF models in Gazebo simulation—bringing our robots to life with physics!
 
 ---
 

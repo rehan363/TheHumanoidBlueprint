@@ -10,6 +10,7 @@ from openai import AsyncOpenAI
 from agents import Agent, OpenAIChatCompletionsModel, handoff
 
 from rag_backend.config import settings
+from rag_backend.utils.error_handlers import ServiceUnavailable
 from rag_backend.agents.sub_agents import get_all_sub_agents
 from rag_backend.agents.guardrails import (
     check_relevance,
@@ -27,8 +28,39 @@ def get_gemini_client() -> AsyncOpenAI:
     """Get AsyncOpenAI client configured for Gemini API."""
     return AsyncOpenAI(
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
-        api_key=settings.orchestrator_api_key
+        api_key=settings.orchestrator_api_key or settings.gemini_api_key_1
     )
+
+
+def get_openrouter_client() -> AsyncOpenAI:
+    """Get AsyncOpenAI client configured for OpenRouter."""
+    return AsyncOpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=settings.openrouter_api_key
+    )
+
+
+def get_agent_client() -> AsyncOpenAI:
+    """Get the appropriate client based on configuration."""
+    # Prefer OpenRouter if available (more reliable for agents)
+    if settings.openrouter_api_key:
+        logger.info("Using OpenRouter for agent orchestration")
+        return get_openrouter_client()
+    elif settings.gemini_api_key_1:
+        logger.info("Using Gemini for agent orchestration")
+        return get_gemini_client()
+    else:
+        raise ServiceUnavailable("llm", "No API keys available for agent orchestration")
+
+
+def get_agent_model() -> str:
+    """Get the appropriate model name based on provider."""
+    if settings.openrouter_api_key:
+        # Use DeepSeek for orchestrator (better reasoning)
+        return settings.deepseek_model
+    else:
+        return "gemini-2.0-flash-exp"
+
 
 
 def create_orchestrator_agent() -> Agent:
@@ -108,8 +140,8 @@ The system will automatically route to that agent."""
         name="RAG Orchestrator",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-2.0-flash-exp",
-            openai_client=get_gemini_client()
+            model=get_agent_model(),
+            openai_client=get_agent_client()
         ),
         handoffs=[
             handoff(sub_agents["retrieval"]),
