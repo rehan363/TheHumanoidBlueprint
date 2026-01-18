@@ -1,31 +1,45 @@
 /**
- * Custom hook for tracking user text selection.
- * Returns the selected text and its position on the screen.
+ * @file useTextSelection.ts
+ * @description Custom React hook for tracking user text selection on the page
+ * and providing its content and screen position.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Data returned by the useTextSelection hook.
- *
- * @property text - The selected text content.
- * @property position - The x/y coordinates for positioning UI near the selection.
+ * Interface for the data representing a user's text selection.
  */
 export interface SelectionData {
+  /**
+   * The actual text content that was selected by the user.
+   */
   text: string;
+  /**
+   * The x and y coordinates on the screen, typically used for positioning a UI element near the selection.
+   * `x`: The horizontal position.
+   * `y`: The vertical position.
+   */
   position: { x: number; y: number };
 }
 
 /**
- * A React hook that detects and returns information about user text selection.
+ * `useTextSelection` is a React hook that detects and provides information
+ * about the user's text selection within the document.
  *
- * @returns An object containing the current selection data and a function to clear it.
+ * It listens to `mouseup` events to capture the selection and `mousedown`
+ * events to clear it.
+ *
+ * @returns {{selection: SelectionData | null, clearSelection: () => void}} An object containing:
+ * - `selection`: An object of type `SelectionData` if text is selected, otherwise `null`.
+ * - `clearSelection`: A function to manually clear the current text selection.
  */
 export const useTextSelection = () => {
   const [selection, setSelection] = useState<SelectionData | null>(null);
 
   /**
-   * Handles the mouseup event to capture text selection.
+   * Handles the `mouseup` event to capture text selection.
+   * If text is selected, it updates the `selection` state with the text content
+   * and its calculated screen position. If no text is selected, it clears the `selection` state.
    */
   const handleSelection = useCallback(() => {
     const selectionObj = window.getSelection();
@@ -60,6 +74,9 @@ export const useTextSelection = () => {
     };
   }, [handleSelection]);
 
+  /**
+   * Clears the current text selection by setting the `selection` state to `null`.
+   */
   const clearSelection = useCallback(() => {
     setSelection(null);
   }, []);

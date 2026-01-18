@@ -1,50 +1,72 @@
 /**
- * Main RAG Chatbot component with floating action button and text selection handling.
+ * @file index.tsx
+ * @description Main RAG Chatbot component that orchestrates the chat experience,
+ * including a floating action button, text selection handling, and the chat modal.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChatModal } from './ChatModal';
 import { useChatAPI } from '../../hooks/useChatAPI';
-import { useSessionStorage } from '../../hooks/useSessionStorage';
+import useSessionStorage from '../../hooks/useSessionStorage';
 import { useTextSelection } from '../../hooks/useTextSelection';
+import type { ChatMessage } from './types';
 import styles from './styles.module.css';
 
+/**
+ * `RAGChatbot` is the main entry component for the Retrieval-Augmented Generation (RAG) chatbot.
+ * It manages the state of the chat modal, integrates with `useChatAPI` for backend communication,
+ * `useSessionStorage` for chat history persistence, and `useTextSelection` for context-aware queries.
+ *
+ * It renders a floating action button to open the chat and a context-sensitive button
+ * for asking AI about selected text.
+ *
+ * @returns {React.FC} The rendered RAGChatbot component.
+ */
 export const RAGChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { messages, isLoading, error, sendQuery, clearError, clearMessages, rateLimitSeconds } = useChatAPI();
-  const { clearHistory } = useSessionStorage(messages);
+  // useSessionStorage for persisting chat history. The key 'rag-chat-history' is used for storage.
+  const [chatHistory, setChatHistory] = useSessionStorage<ChatMessage[]>('rag-chat-history', []);
+
+  // useChatAPI hook provides functionality for sending queries to the backend.
+  const { isLoading, error, sendQuery, clearError, rateLimitSeconds } = useChatAPI(chatHistory, setChatHistory);
+  // useTextSelection hook detects and manages user's text selections on the page.
   const { selection, clearSelection } = useTextSelection();
 
-  // Load history on mount
-  useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem('rag-chat-history');
-      if (stored) {
-        console.log('Chat history loaded');
-      }
-    } catch (err) {
-      console.error('Error loading history:', err);
-    }
-  }, []);
-
+  /**
+   * Opens the chat modal and clears any previous error messages.
+   */
   const handleOpenChat = () => {
     setIsOpen(true);
     clearError();
   };
 
+  /**
+   * Closes the chat modal.
+   */
   const handleCloseChat = () => {
     setIsOpen(false);
   };
 
+  /**
+   * Submits a user query to the RAG backend via the `sendQuery` function from `useChatAPI`.
+   * @param {string} query The user's input query.
+   */
   const handleSubmitQuery = async (query: string) => {
     await sendQuery(query);
   };
 
+  /**
+   * Clears the entire chat history, both from state and session storage, and also clears any active errors.
+   */
   const handleClearHistory = () => {
-    clearMessages();
-    clearHistory();
+    setChatHistory([]);
+    clearError(); // Also clear any errors
   };
 
+  /**
+   * Handles the action when the "Ask AI about this" button is clicked after text selection.
+   * It opens the chat modal and clears the selection.
+   */
   const handleAskAboutSelection = () => {
     if (!selection) return;
 
@@ -89,12 +111,13 @@ export const RAGChatbot: React.FC = () => {
       <ChatModal
         isOpen={isOpen}
         onClose={handleCloseChat}
-        messages={messages}
+        messages={chatHistory}
         isLoading={isLoading}
         error={error}
         onSubmitQuery={handleSubmitQuery}
         rateLimitSeconds={rateLimitSeconds}
         selection={selection}
+        onClearHistory={handleClearHistory}
       />
     </>
   );

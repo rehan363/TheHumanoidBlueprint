@@ -1,13 +1,13 @@
 ---
 sidebar_position: 11
-title: "Week 11 - Voice-to-Action"
+title: "Chapter 11 - Voice-to-Action"
 description: "Build natural language interfaces for robots using speech recognition, LLMs, and action execution"
 keywords: [voice control, speech recognition, LLM, natural language, robotics, Whisper, GPT, Claude, ROS 2]
 last_updated: "2025-12-29"
 estimated_reading_time: 28
 ---
 
-# Week 11: Voice-to-Action
+# Chapter 11: Voice-to-Action
 
 Welcome to Module 4! We now explore how to give robots the ability to understand and respond to natural language commands. By combining speech recognition, Large Language Models (LLMs), and robot action systems, we create intuitive human-robot interaction that goes far beyond simple keyword matching.
 
@@ -1463,7 +1463,7 @@ Voice control transforms how humans interact with robots, making them accessible
 
 ## Next Week Preview
 
-In **Week 12**, we explore **Cognitive Planning with VLMs**:
+In **Chapter 12**, we explore **Cognitive Planning with VLMs**:
 - Vision-Language Models for scene understanding
 - Grounding language in visual perception
 - Task planning from natural language goals

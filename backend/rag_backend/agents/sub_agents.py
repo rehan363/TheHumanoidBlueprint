@@ -14,6 +14,7 @@ from openai import AsyncOpenAI
 from agents import Agent, OpenAIChatCompletionsModel
 
 from rag_backend.config import settings
+from rag_backend.utils.error_handlers import ServiceUnavailable
 from rag_backend.agents.tools import (
     retrieve_context,
     list_week_topics,
@@ -35,11 +36,39 @@ def get_gemini_client(api_key: str = None) -> AsyncOpenAI:
     Returns:
         AsyncOpenAI client
     """
-    key = api_key or settings.gemini_api_key
+    key = api_key or settings.gemini_api_key_1
     return AsyncOpenAI(
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
         api_key=key
     )
+
+
+def get_openrouter_client() -> AsyncOpenAI:
+    """Get AsyncOpenAI client configured for OpenRouter."""
+    return AsyncOpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=settings.openrouter_api_key
+    )
+
+
+def get_agent_client_and_model() -> tuple[AsyncOpenAI, str]:
+    """
+    Get the appropriate client and model for sub-agents.
+    
+    Returns:
+        Tuple of (client, model_name)
+    """
+    # Prefer OpenRouter if available (more reliable)
+    if settings.openrouter_api_key:
+        logger.info("Using OpenRouter for sub-agents")
+        # Use Mistral for sub-agents (faster, good for specific tasks)
+        return get_openrouter_client(), settings.mistral_model
+    elif settings.gemini_api_key_1:
+        logger.info("Using Gemini for sub-agents")
+        return get_gemini_client(), "gemini-2.0-flash-exp"
+    else:
+        raise ServiceUnavailable("llm", "No API keys available for sub-agents")
+
 
 
 def create_retrieval_agent() -> Agent:
@@ -68,12 +97,14 @@ CITATION FORMAT:
 
 Remember: You are a search specialist. Your job is to find and cite, not to analyze or compare."""
 
+    client, model = get_agent_client_and_model()
+    
     return Agent(
         name="Retrieval Specialist",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-2.0-flash-exp",
-            openai_client=get_gemini_client(settings.retrieval_agent_api_key)
+            model=model,
+            openai_client=client
         ),
         tools=[
             retrieve_context,
@@ -126,12 +157,14 @@ DDS is the communication backbone that makes ROS 2 robots work together smoothly
 
 [Source: Week 3, ROS 2 Architecture, Part 1 of 2]"""
 
+    client, model = get_agent_client_and_model()
+    
     return Agent(
         name="Explanation Specialist",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-2.0-flash-exp",
-            openai_client=get_gemini_client(settings.explanation_agent_api_key)
+            model=model,
+            openai_client=client
         )
     )
 
@@ -184,12 +217,14 @@ EXAMPLE STRUCTURE:
 - ROS 1: [Week 2, ROS Basics, Part 1 of 3]
 - ROS 2: [Week 3, ROS 2 Architecture, Part 1 of 2]"""
 
+    client, model = get_agent_client_and_model()
+    
     return Agent(
         name="Comparison Specialist",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-2.0-flash-exp",
-            openai_client=get_gemini_client(settings.comparison_agent_api_key)
+            model=model,
+            openai_client=client
         )
     )
 
@@ -235,12 +270,14 @@ Instead of "Tell me about robots", try:
 
 What specific aspect would you like to learn about?"""
 
+    client, model = get_agent_client_and_model()
+    
     return Agent(
         name="Clarification Helper",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-2.0-flash-exp",
-            openai_client=get_gemini_client(settings.clarification_agent_api_key)
+            model=model,
+            openai_client=client
         )
     )
 
@@ -295,12 +332,14 @@ EXAMPLE STRUCTURE:
 
 [Sources: Week 3, Multiple Sections]"""
 
+    client, model = get_agent_client_and_model()
+    
     return Agent(
         name="Summary Generator",
         instructions=instructions,
         model=OpenAIChatCompletionsModel(
-            model="gemini-2.0-flash-exp",
-            openai_client=get_gemini_client(settings.summary_agent_api_key)
+            model=model,
+            openai_client=client
         ),
         tools=[
             generate_week_summary,

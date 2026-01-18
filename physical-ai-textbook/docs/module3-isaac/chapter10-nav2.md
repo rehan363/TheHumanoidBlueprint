@@ -1,15 +1,15 @@
 ---
 sidebar_position: 10
-title: "Week 10 - Nav2 Path Planning"
+title: "Chapter 10 - Nav2 Path Planning"
 description: "Master autonomous robot navigation with ROS 2 Nav2, behavior trees, and advanced path planning"
 keywords: [Nav2, path planning, autonomous navigation, ROS 2, behavior trees, costmaps, SLAM, motion planning]
 last_updated: "2025-12-29"
 estimated_reading_time: 28
 ---
 
-# Week 10: Nav2 Path Planning
+# Chapter 10: Nav2 Path Planning
 
-With perception systems from Week 9 providing localization and mapping, we now tackle the challenge of autonomous navigation. Nav2 (Navigation 2) is the ROS 2 navigation stack that enables robots to move intelligently through their environment, avoiding obstacles and reaching goals efficiently.
+With perception systems from Chapter 9 providing localization and mapping, we now tackle the challenge of autonomous navigation. Nav2 (Navigation 2) is the ROS 2 navigation stack that enables robots to move intelligently through their environment, avoiding obstacles and reaching goals efficiently.
 
 ---
 
@@ -1243,9 +1243,9 @@ Navigation is the cornerstone of autonomous mobile robotics. With Nav2, you have
 
 Congratulations on completing Module 3: The AI-Robot Brain! You've learned:
 
-- **Week 8**: NVIDIA Isaac Sim for GPU-accelerated simulation
-- **Week 9**: Isaac ROS for perception (cuVSLAM, nvblox)
-- **Week 10**: Nav2 for autonomous navigation
+- **Chapter 8**: NVIDIA Isaac Sim for GPU-accelerated simulation
+- **Chapter 9**: Isaac ROS for perception (cuVSLAM, nvblox)
+- **Chapter 10**: Nav2 for autonomous navigation
 
 ---
 
@@ -1253,6 +1253,6 @@ Congratulations on completing Module 3: The AI-Robot Brain! You've learned:
 
 In **Module 4: The Vision-Language-Action Pipeline**, we explore:
 
-- **Week 11**: Voice-to-Action with speech recognition and LLMs
-- **Week 12**: Cognitive Planning with VLMs for task understanding
-- **Week 13**: Capstone Project integrating all concepts
+- **Chapter 11**: Voice-to-Action with speech recognition and LLMs
+- **Chapter 12**: Cognitive Planning with VLMs for task understanding
+- **Chapter 13**: Capstone Project integrating all concepts

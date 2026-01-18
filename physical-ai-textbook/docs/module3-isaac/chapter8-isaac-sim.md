@@ -1,13 +1,13 @@
 ---
 sidebar_position: 8
-title: "Week 8 - NVIDIA Isaac Sim"
+title: "Chapter 8 - NVIDIA Isaac Sim"
 description: "Master GPU-accelerated robotics simulation with NVIDIA Isaac Sim and Omniverse"
 keywords: [NVIDIA Isaac, Isaac Sim, Omniverse, GPU simulation, synthetic data, AI robotics, digital twin]
 last_updated: "2025-12-29"
 estimated_reading_time: 25
 ---
 
-# Week 8: NVIDIA Isaac Sim
+# Chapter 8: NVIDIA Isaac Sim
 
 Welcome to Module 3! We now enter the realm of GPU-accelerated simulation with NVIDIA Isaac Sim. Built on the Omniverse platform, Isaac Sim provides unparalleled physics accuracy, photorealistic rendering, and deep integration with NVIDIA's AI ecosystem.
 
@@ -1063,7 +1063,7 @@ Isaac Sim represents the cutting edge of robotics simulation, enabling developme
 
 ## Next Week Preview
 
-In **Week 9**, we dive into **Isaac ROS & VSLAM**:
+In **Chapter 9**, we dive into **Isaac ROS & VSLAM**:
 - Isaac ROS packages for perception
 - Visual SLAM with Isaac ROS Visual SLAM
 - 3D reconstruction with nvblox

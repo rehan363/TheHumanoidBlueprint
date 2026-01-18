@@ -1,13 +1,13 @@
 ---
 sidebar_position: 1
-title: "Week 1: Foundations of Physical AI"
+title: "Chapter 1: Foundations of Physical AI"
 description: "Introduction to Physical AI, embodied intelligence, and how AI systems interact with the physical world"
 keywords: [Physical AI, embodied intelligence, robotics, AI agents, sensors]
 last_updated: "2025-12-28"
 estimated_reading_time: 15
 ---
 
-# Week 1: Foundations of Physical AI
+# Chapter 1: Foundations of Physical AI
 
 ## Learning Objectives
 

@@ -24,13 +24,24 @@ class Settings(BaseSettings):
 
     # Gemini API Configuration
     gemini_api_key: str = ""  # Will default to gemini_api_key_1 if not set
-    gemini_api_key_1: str  # Primary key for orchestrator and some sub-agents
-    gemini_api_key_2: str  # Secondary key for embeddings and other sub-agents
-    gemini_api_key_3: str  # Tertiary key for remaining sub-agents
+    gemini_api_key_1: str = ""  # Primary key for orchestrator and some sub-agents
+    gemini_api_key_2: str = ""  # Secondary key for embeddings and other sub-agents
+    gemini_api_key_3: str = ""  # Tertiary key for remaining sub-agents
     gemini_model: str = "gemini-2.0-flash-exp"
     gemini_embedding_model: str = "models/text-embedding-004"
     gemini_temperature: float = 0.7
     gemini_max_tokens: int = 1024
+
+    # OpenRouter Configuration
+    openrouter_api_key: str = ""
+    deepseek_model: str = "tngtech/deepseek-r1t2-chimera:free"
+    mistral_model: str = "mistralai/devstral-2512:free"
+    
+    # LLM Provider Strategy
+    # Options: "gemini", "openrouter_deepseek", "openrouter_mistral", "auto"
+    # "auto" will try Gemini first, fallback to OpenRouter if quota exceeded
+    llm_provider: str = "auto"
+    primary_llm_model: str = "gemini-2.0-flash-exp"  # Used when provider is "auto"
 
     # Qdrant Configuration
     qdrant_url: str

@@ -1,15 +1,11 @@
-"""
-Chat query endpoint router for RAG system using simplified pipeline.
-"""
-
-from fastapi import APIRouter, Request, Response, status
-from slowapi import Limiter
-from slowapi.util import get_remote_address
 import logging
 import time
 from datetime import datetime
+from uuid import UUID
+from typing import List, Optional
 
 from rag_backend.models.chat import ChatQueryRequest, ChatQueryResponse, Citation
+from rag_backend.models.session import QuerySession, SessionMessage
 from rag_backend.services.rag_pipeline import get_rag_pipeline
 from rag_backend.utils.rate_limiter import limiter
 from rag_backend.utils.error_handlers import (
@@ -17,11 +13,10 @@ from rag_backend.utils.error_handlers import (
     RateLimitExceeded,
     ServiceUnavailable
 )
-
+from backend.src.services.database_service import db_service # Import db_service
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
-
 
 @router.post(
     "/query",
@@ -34,14 +29,15 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 async def query_chatbot(request: Request, response: Response, query_request: ChatQueryRequest):
     """
     Process a chat query through RAG pipeline.
+    Persists user and assistant messages to the database.
 
     Args:
         request: FastAPI request object (for rate limiting)
         response: Response object (for rate limit headers)
-        query_request: Chat query request with query text and type
+        query_request: Chat query request with query text, type, and optional session_id
 
     Returns:
-        ChatQueryResponse: AI-generated answer with citations
+        ChatQueryResponse: AI-generated answer with citations and session_id
 
     Raises:
         400: Invalid request (validation failed)
@@ -50,6 +46,7 @@ async def query_chatbot(request: Request, response: Response, query_request: Cha
         503: Service unavailable (backend offline)
     """
     start_time = time.time()
+    session_id: Optional[UUID] = None
 
     try:
         # Validate query length
@@ -71,18 +68,52 @@ async def query_chatbot(request: Request, response: Response, query_request: Cha
             f"{query_request.query[:50]}..."
         )
 
+        # Handle session: get existing or create new
+        if query_request.session_id:
+            session_id = query_request.session_id
+        else:
+            new_session = await db_service.create_session()
+            session_id = new_session.id
+            logger.info(f"Created new session: {session_id}")
+
+        # Persist user message
+        await db_service.save_message(
+            session_id=session_id,
+            role='user',
+            content=query_request.query,
+            query_type=query_request.query_type
+        )
+
         # Get RAG pipeline
         rag_pipeline = get_rag_pipeline()
 
         # Process query through RAG pipeline
         result = await rag_pipeline.process_query(query_request)
 
-        logger.info(
-            f"Query processed successfully in {result.processing_time_ms}ms "
-            f"with {len(result.citations)} citations"
+        # Persist assistant message
+        await db_service.save_message(
+            session_id=session_id,
+            role='assistant',
+            content=result.response,
+            citations=result.citations,
+            query_type=query_request.query_type
         )
 
-        return result
+        logger.info(
+            f"Query processed successfully in {result.processing_time_ms}ms "
+            f"with {len(result.citations)} citations for session {session_id}"
+        )
+
+        # Add session_id to the response
+        chat_response = ChatQueryResponse(
+            answer=result.response,
+            citations=result.citations,
+            query_type=query_request.query_type,
+            session_id=session_id,
+            processing_time_ms=result.processing_time_ms,
+            timestamp=datetime.utcnow(),
+        )
+        return chat_response
 
     except InvalidRequest as e:
         logger.warning(f"Invalid request: {e.message}")
@@ -97,5 +128,40 @@ async def query_chatbot(request: Request, response: Response, query_request: Cha
         raise
 
     except Exception as e:
-        logger.exception(f"Unexpected error processing query: {e}")
+        logger.exception(f"Unexpected error processing query for session {session_id}: {e}")
         raise ServiceUnavailable("rag_system", "An unexpected error occurred while processing your query")
+
+@router.get(
+    "/history/{session_id}",
+    response_model=List[SessionMessage],
+    status_code=status.HTTP_200_OK,
+    summary="Retrieve chat history for a session",
+    description="Fetches all messages for a given session ID"
+)
+async def get_chat_history(session_id: UUID):
+    """
+    Retrieve chat history for a given session.
+
+    Args:
+        session_id: The UUID of the session to retrieve history for.
+
+    Returns:
+        List[SessionMessage]: A list of chat messages in chronological order.
+
+    Raises:
+        404: If the session ID does not exist.
+        500: Internal server error.
+    """
+    try:
+        messages = await db_service.get_session_messages(session_id)
+        if not messages:
+            # Check if session exists at all
+            session_exists = await db_service.fetchrow("SELECT id FROM query_sessions WHERE id = $1", session_id)
+            if not session_exists:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
+        return messages
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception(f"Error retrieving chat history for session {session_id}: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="An error occurred while retrieving chat history.")

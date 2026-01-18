@@ -1,13 +1,13 @@
 ---
 sidebar_position: 4
-title: "Week 4: Nodes, Topics, and Services"
+title: "Chapter 4: Nodes, Topics, and Services"
 description: "Deep dive into ROS 2 programming with nodes, topics, services, and writing your first ROS 2 applications"
 keywords: [ROS 2 nodes, topics, services, publishers, subscribers, rclpy, rclcpp]
 last_updated: "2025-12-29"
 estimated_reading_time: 25
 ---
 
-# Week 4: Nodes, Topics, and Services
+# Chapter 4: Nodes, Topics, and Services
 
 ## Learning Objectives
 
@@ -743,7 +743,7 @@ This week, we dove deep into ROS 2 programming fundamentals:
 5. **Launch files**: Start multiple nodes with configuration using Python launch files
 6. **Debugging**: CLI tools (`ros2 topic`, `ros2 node`, etc.) and GUI tools (rqt_graph, rqt_console)
 
-In Week 5, we'll learn about URDF (Unified Robot Description Format) for describing robot models—essential for simulation and visualization.
+In Chapter 5, we'll learn about URDF (Unified Robot Description Format) for describing robot models—essential for simulation and visualization.
 
 ---
 

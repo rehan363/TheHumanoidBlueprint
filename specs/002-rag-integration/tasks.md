@@ -125,36 +125,16 @@ This is a web app with:
 
 ### Implementation for User Story 3
 
-- [ ] T053 [US3] Enhance useSessionStorage.ts in physical-ai-textbook/src/hooks/ to persist full conversation history to sessionStorage
-- [ ] T054 [US3] Update MessageList.tsx in physical-ai-textbook/src/components/RAGChatbot/ to load conversation history on mount from sessionStorage
-- [ ] T055 [US3] Add scroll restoration in MessageList.tsx (scroll to bottom on new messages, allow scroll up for history)
-- [ ] T056 [US3] Add "Clear history" button in ChatModal.tsx to reset conversation (clear sessionStorage)
-- [ ] T057 [US3] Add message timestamps in MessageList.tsx for each exchange
+- [x] T053 [US3] Enhance useSessionStorage.ts in physical-ai-textbook/src/hooks/ to persist full conversation history to sessionStorage
+- [x] T054 [US3] Update MessageList.tsx in physical-ai-textbook/src/components/RAGChatbot/ to load conversation history on mount from sessionStorage
+- [x] T055 [US3] Add scroll restoration in MessageList.tsx (scroll to bottom on new messages, allow scroll up for history)
+- [x] T056 [US3] Add "Clear history" button in ChatModal.tsx to reset conversation (clear sessionStorage)
+- [x] T057 [US3] Add message timestamps in MessageList.tsx for each exchange
 - [ ] T058 [US3] Test history persistence: ask questions → refresh page → verify history restored
 
 **Checkpoint**: All user stories should now be independently functional. Students have full RAG chat experience with history.
 
----
 
-## Phase 6: Admin Indexing Endpoint (Priority: P3)
-
-**Goal**: Provide an admin endpoint to trigger re-indexing of documentation content when new chapters are added or content is updated.
-
-**Independent Test**: Call POST /admin/index with admin token and verify that indexing job starts and updates index_metadata.json with new chunk count and timestamp.
-
-### Implementation for Admin Endpoint
-
-- [ ] T059 [P] Create backend/src/models/admin.py with Pydantic models (IndexRequest, IndexResponse)
-- [ ] T060 Create backend/src/routers/admin.py with POST /admin/index endpoint
-- [ ] T061 Add admin token validation in backend/src/routers/admin.py (Bearer token from ADMIN_TOKEN env var)
-- [ ] T062 Integrate index_docs.py script as async task in backend/src/routers/admin.py
-- [ ] T063 Add job status tracking in backend/src/routers/admin.py (job_id, estimated_time_seconds)
-- [ ] T064 Update backend/data/index_metadata.json after successful indexing with new stats
-- [ ] T065 Test admin endpoint: POST /admin/index → verify indexing starts → check index_metadata.json updated
-
-**Checkpoint**: Admin can trigger re-indexing when content is updated.
-
----
 
 ## Phase 7: Database Integration for Session Storage (Priority: P2)
 
@@ -164,18 +144,18 @@ This is a web app with:
 
 ### Implementation for Database Integration
 
-- [ ] T066 [P] Create backend/src/services/database_service.py with asyncpg client for Neon Postgres
-- [ ] T067 Create database migration script backend/scripts/setup_database.py with query_sessions and session_messages table schemas from data-model.md
-- [ ] T068 [P] Create backend/src/models/session.py with Pydantic models (QuerySession, SessionMessage)
-- [ ] T069 Implement session creation in backend/src/services/database_service.py (generate anonymous session_token)
-- [ ] T070 Implement message persistence in backend/src/services/database_service.py (save user and assistant messages)
-- [ ] T071 Implement message retrieval in backend/src/services/database_service.py (get session history by token)
-- [ ] T072 Update POST /api/chat/query in backend/src/routers/chat.py to persist messages to database after response
-- [ ] T073 Add session_id parameter to ChatQueryRequest in backend/src/models/chat.py (optional, auto-generated if missing)
-- [ ] T074 Update useChatAPI.ts in physical-ai-textbook/src/hooks/ to include session_id in requests
-- [ ] T075 Generate and store anonymous session_token in sessionStorage on first query
-- [ ] T076 Add GET /api/chat/history endpoint in backend/src/routers/chat.py to retrieve conversation history by session_token
-- [ ] T077 Update useSessionStorage.ts to fetch history from /api/chat/history on mount (fallback to sessionStorage if offline)
+- [x] T066 [P] Create backend/src/services/database_service.py with asyncpg client for Neon Postgres
+- [x] T067 Create database migration script backend/scripts/setup_database.py with query_sessions and session_messages table schemas from data-model.md
+- [x] T068 [P] Create backend/src/models/session.py with Pydantic models (QuerySession, SessionMessage)
+- [x] T069 Implement session creation in backend/src/services/database_service.py (generate anonymous session_token)
+- [x] T070 Implement message persistence in backend/src/services/database_service.py (save user and assistant messages)
+- [x] T071 Implement message retrieval in backend/src/services/database_service.py (get session history by token)
+- [x] T072 Update POST /api/chat/query in backend/src/routers/chat.py to persist messages to database after response
+- [x] T073 Add session_id parameter to ChatQueryRequest in backend/src/models/chat.py (optional, auto-generated if missing)
+- [x] T074 Update useChatAPI.ts in physical-ai-textbook/src/hooks/ to include session_id in requests
+- [x] T075 Generate and store anonymous session_token in sessionStorage on first query
+- [x] T076 Add GET /api/chat/history endpoint in backend/src/routers/chat.py to retrieve conversation history by session_token
+- [x] T077 Update useSessionStorage.ts to fetch history from /api/chat/history on mount (fallback to sessionStorage if offline)
 - [ ] T078 Test database persistence: ask questions → refresh page → verify history loaded from database
 
 **Checkpoint**: Conversation history is now persisted in Neon Postgres, satisfying Constitution Principle II requirement.
@@ -186,10 +166,10 @@ This is a web app with:
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T079 [P] Add comprehensive docstrings to all backend services (embedding_service.py, vector_store.py, llm_service.py, rag_pipeline.py, database_service.py)
-- [ ] T080 [P] Add TypeScript JSDoc comments to all React components and hooks
-- [ ] T081 Add logging middleware in backend/src/main.py for request/response tracking
-- [ ] T082 [P] Add error logging in all backend services with structured logging
+- [x] T079 [P] Add comprehensive docstrings to all backend services (embedding_service.py, vector_store.py, llm_service.py, rag_pipeline.py, database_service.py)
+- [x] T080 [P] Add TypeScript JSDoc comments to all React components and hooks
+- [x] T081 Add logging middleware in backend/src/main.py for request/response tracking
+- [x] T082 [P] Add error logging in all backend services with structured logging
 - [ ] T083 Update backend/README.md with deployment instructions for Vercel/Railway
 - [ ] T084 [P] Create deployment configuration backend/Dockerfile for containerized deployment
 - [ ] T085 [P] Create GitHub Actions workflow .github/workflows/backend-deploy.yml for backend deployment

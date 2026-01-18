@@ -28,9 +28,13 @@ class LLMService:
             }
             self._query_cache = {}  # Simple in-memory cache
             self._cache_timestamps = {}  # Track cache entry times
-            logger.info(f"LLMService initialized with model: {settings.gemini_model}")
+            logger.info(f"LLMService initialized with model: {settings.gemini_model}", extra={"model_name": settings.gemini_model})
         except Exception as e:
-            logger.error(f"Failed to initialize LLMService: {e}")
+            logger.error(
+                f"Failed to initialize LLMService: {e}",
+                exc_info=True,
+                extra={"error_type": "InitializationError", "exception_message": str(e)}
+            )
             raise ServiceUnavailable("gemini", f"Failed to initialize Gemini: {e}")
 
     def _get_cache_key(self, prompt: str, context: str) -> str:
@@ -120,7 +124,17 @@ class LLMService:
             return response
 
         except Exception as e:
-            logger.error(f"LLM generation failed: {e}")
+            query_hash = hashlib.md5(query.encode()).hexdigest()
+            logger.error(
+                f"LLM generation failed for query {query_hash[:8]}: {e}",
+                exc_info=True,
+                extra={
+                    "error_type": "LLMGenerationError",
+                    "query_hash": query_hash,
+                    "context_chunks_count": len(context_chunks),
+                    "exception_message": str(e)
+                }
+            )
             raise LLMGenerationError(f"Failed to generate response: {e}")
 
     def _build_context_string(self, context_chunks: List[Dict[str, Any]]) -> str:
@@ -208,12 +222,23 @@ YOUR ANSWER:"""
                 return response.text.strip()
 
             except Exception as e:
-                logger.warning(f"Generation attempt {attempt + 1} failed: {e}")
+                prompt_hash = hashlib.md5(prompt.encode()).hexdigest()
+                logger.warning(
+                    f"Generation attempt {attempt + 1} failed for prompt {prompt_hash[:8]}: {e}",
+                    exc_info=True,
+                    extra={
+                        "error_type": "GenerationAttemptFailed",
+                        "attempt": attempt + 1,
+                        "max_retries": max_retries,
+                        "prompt_hash": prompt_hash,
+                        "exception_message": str(e)
+                    }
+                )
 
                 if attempt < max_retries - 1:
                     # Exponential backoff
                     delay = base_delay * (2 ** attempt)
-                    logger.info(f"Retrying in {delay} seconds...")
+                    logger.info(f"Retrying in {delay} seconds...", extra={"next_attempt_delay": delay})
                     time.sleep(delay)
                 else:
                     raise LLMGenerationError(f"All retry attempts failed: {e}")
@@ -232,7 +257,11 @@ YOUR ANSWER:"""
             )
             return bool(test_response and test_response.text)
         except Exception as e:
-            logger.error(f"LLM health check failed: {e}")
+            logger.error(
+                f"LLM health check failed: {e}",
+                exc_info=True,
+                extra={"error_type": "HealthCheckFailed", "exception_message": str(e)}
+            )
             return False
 
     def get_cache_stats(self) -> Dict[str, Any]:

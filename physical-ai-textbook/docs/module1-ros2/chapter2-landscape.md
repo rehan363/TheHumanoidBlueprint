@@ -1,13 +1,13 @@
 ---
 sidebar_position: 2
-title: "Week 2: Physical AI Landscape & Sensors"
+title: "Chapter 2: Physical AI Landscape & Sensors"
 description: "Overview of humanoid robotics landscape and sensor systems including LIDAR, cameras, IMUs, and force/torque sensors"
 keywords: [humanoid robots, LIDAR, depth cameras, IMU, sensors, robotics hardware]
 last_updated: "2025-12-28"
 estimated_reading_time: 18
 ---
 
-# Week 2: Physical AI Landscape & Sensors
+# Chapter 2: Physical AI Landscape & Sensors
 
 ## Learning Objectives
 

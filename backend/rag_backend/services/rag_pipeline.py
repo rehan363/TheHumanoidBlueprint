@@ -7,7 +7,7 @@ import time
 import logging
 from rag_backend.services.embedding_service import get_embedding_service
 from rag_backend.services.vector_store import get_vector_store
-from rag_backend.services.llm_service import get_llm_service
+from rag_backend.services.llm_service_multi import get_llm_service
 from rag_backend.models.chat import ChatQueryRequest, ChatQueryResponse, Citation
 from rag_backend.config import settings
 from rag_backend.utils.error_handlers import (
@@ -28,7 +28,7 @@ class RAGPipeline:
         self.embedding_service = get_embedding_service()
         self.vector_store = get_vector_store()
         self.llm_service = get_llm_service()
-        logger.info("RAG Pipeline initialized")
+        logger.info("RAG Pipeline initialized", extra={"status": "initialized"})
 
     async def process_query(self, request: ChatQueryRequest) -> ChatQueryResponse:
         """
@@ -44,10 +44,14 @@ class RAGPipeline:
             Various exceptions for different failure modes
         """
         start_time = time.time()
+        query_id = str(uuid.uuid4()) # Generate a unique ID for this query transaction
 
         try:
             # Step 1: Generate query embedding
-            logger.info(f"Processing {request.query_type} query: {request.query[:50]}...")
+            logger.info(
+                f"Processing {request.query_type} query: {request.query[:50]}...",
+                extra={"query_id": query_id, "query_type": request.query_type, "session_id": str(request.session_id)}
+            )
             query_embedding = await self.embedding_service.generate_query_embedding(request.query)
 
             # Step 2: Retrieve relevant chunks
@@ -55,7 +59,10 @@ class RAGPipeline:
 
             # Step 3: Handle case with no relevant content
             if not context_chunks:
-                logger.warning("No relevant chunks found for query")
+                logger.warning(
+                    "No relevant chunks found for query",
+                    extra={"query_id": query_id, "query_type": request.query_type, "session_id": str(request.session_id), "query_text_preview": request.query[:50]}
+                )
                 processing_time_ms = int((time.time() - start_time) * 1000)
                 return ChatQueryResponse(
                     answer="I couldn't find information about that in the textbook. Could you try rephrasing your question or ask about a different topic covered in the course?",
@@ -81,7 +88,10 @@ class RAGPipeline:
             # Calculate processing time
             processing_time_ms = int((time.time() - start_time) * 1000)
 
-            logger.info(f"Query processed successfully in {processing_time_ms}ms with {len(citations)} citations")
+            logger.info(
+                f"Query processed successfully in {processing_time_ms}ms with {len(citations)} citations",
+                extra={"query_id": query_id, "processing_time_ms": processing_time_ms, "num_citations": len(citations)}
+            )
 
             return ChatQueryResponse(
                 answer=answer,
@@ -92,11 +102,18 @@ class RAGPipeline:
             )
 
         except (EmbeddingGenerationError, VectorSearchError, LLMGenerationError) as e:
-            logger.error(f"RAG pipeline error: {e}")
+            logger.error(
+                f"RAG pipeline error for query {query_id}: {e}",
+                exc_info=True,
+                extra={"query_id": query_id, "error_type": e.__class__.__name__, "exception_message": str(e)}
+            )
             raise
 
         except Exception as e:
-            logger.exception(f"Unexpected error in RAG pipeline: {e}")
+            logger.exception(
+                f"Unexpected error in RAG pipeline for query {query_id}: {e}",
+                extra={"query_id": query_id, "error_type": "UnexpectedError", "exception_message": str(e)}
+            )
             raise ServiceUnavailable("rag_pipeline", str(e))
 
     async def _retrieve_context(
@@ -218,7 +235,7 @@ class RAGPipeline:
             "gemini": await self.llm_service.health_check(),
         }
 
-        logger.info(f"Pipeline health check: {health_status}")
+        logger.info(f"Pipeline health check: {health_status}", extra={"health_status": health_status})
         return health_status
 
 

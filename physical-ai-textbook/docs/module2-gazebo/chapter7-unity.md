@@ -1,13 +1,13 @@
 ---
 sidebar_position: 7
-title: "Week 7 - Unity for Robotics"
+title: "Chapter 7 - Unity for Robotics"
 description: "Leverage Unity's powerful rendering and simulation capabilities for robotics development"
 keywords: [Unity, robotics, simulation, synthetic data, machine learning, ROS 2, digital twin]
 last_updated: "2025-12-29"
 estimated_reading_time: 22
 ---
 
-# Week 7: Unity for Robotics
+# Chapter 7: Unity for Robotics
 
 While Gazebo excels at physics-accurate simulation, Unity brings photorealistic rendering, advanced ML integration, and cross-platform deployment to robotics. In this chapter, we explore Unity Robotics Hub and how it complements traditional simulators.
 
@@ -946,7 +946,7 @@ Unity fills a critical gap in the robotics simulation ecosystem by providing the
 
 ## Next Week Preview
 
-In **Week 8**, we enter **Module 3: The AI-Robot Brain** with **NVIDIA Isaac Sim**:
+In **Chapter 8**, we enter **Module 3: The AI-Robot Brain** with **NVIDIA Isaac Sim**:
 - GPU-accelerated physics simulation
 - Integration with NVIDIA's AI stack
 - Advanced perception with Isaac ROS

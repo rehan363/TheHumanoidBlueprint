@@ -1,13 +1,13 @@
 ---
 sidebar_position: 13
-title: "Week 13 - Capstone Project"
+title: "Chapter 13 - Capstone Project"
 description: "Build a complete autonomous robot assistant integrating perception, navigation, manipulation, and natural language interaction"
 keywords: [capstone, project, Physical AI, autonomous robot, ROS 2, VLA, integration, portfolio]
 last_updated: "2025-12-30"
 estimated_reading_time: 35
 ---
 
-# Week 13: Capstone Project
+# Chapter 13: Capstone Project
 
 Congratulations on reaching the final chapter! This capstone project brings together everything you've learned across all four modules to build a complete Physical AI system. You'll create an autonomous robot assistant capable of understanding natural language commands, perceiving its environment, planning tasks, and executing complex multi-step actions.
 
@@ -1941,12 +1941,12 @@ MIT License
 
 ### 1. Start Simple
 ```
-Week 1: Get simulation running with teleop
-Week 2: Add perception (static object detection)
-Week 3: Integrate navigation (go to fixed points)
-Week 4: Add voice commands (simple keywords)
-Week 5: Integrate VLM planning
-Week 6: Polish and document
+Chapter 1: Get simulation running with teleop
+Chapter 2: Add perception (static object detection)
+Chapter 3: Integrate navigation (go to fixed points)
+Chapter 4: Add voice commands (simple keywords)
+Chapter 5: Integrate VLM planning
+Chapter 6: Polish and document
 ```
 
 ### 2. Test Incrementally

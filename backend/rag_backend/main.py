@@ -58,15 +58,56 @@ app.add_middleware(
 # Logging middleware
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """Log all incoming requests and responses."""
-    logger.info(f"Incoming request: {request.method} {request.url.path}")
+    """
+    Log all incoming requests and outgoing responses, including processing time
+    and response body for error statuses.
+    """
+    start_time = time.perf_counter() # Use time.perf_counter for higher resolution timing
+
+    # Log incoming request details
+    logger.info(
+        f"Incoming Request: {request.client.host}:{request.client.port} "
+        f"{request.method} {request.url.path}"
+    )
 
     try:
         response = await call_next(request)
-        logger.info(f"Response status: {response.status_code}")
+        process_time = time.perf_counter() - start_time
+        formatted_process_time = f"{process_time:.4f}s"
+
+        # Log response status and processing time
+        log_message = (
+            f"Outgoing Response: {request.client.host}:{request.client.port} "
+            f"{request.method} {request.url.path} - "
+            f"Status {response.status_code} - Took {formatted_process_time}"
+        )
+
+        if response.status_code >= 400:
+            # For error responses, try to read and log the response body
+            # We need to buffer the response body to read it and then re-send it
+            response_body = b""
+            async for chunk in response.body_iterator:
+                response_body += chunk
+
+            try:
+                # Attempt to decode as JSON for better readability
+                log_message += f" - Body: {response_body.decode('utf-8')}"
+            except UnicodeDecodeError:
+                log_message += f" - Body: (non-text content)"
+
+            logger.error(log_message)
+            return Response(content=response_body, status_code=response.status_code, headers=dict(response.headers))
+        else:
+            logger.info(log_message)
+
         return response
     except Exception as e:
-        logger.exception(f"Request failed: {e}")
+        process_time = time.perf_counter() - start_time
+        formatted_process_time = f"{process_time:.4f}s"
+        logger.exception(
+            f"Request Failed: {request.client.host}:{request.client.port} "
+            f"{request.method} {request.url.path} - Took {formatted_process_time} - Error: {e}"
+        )
         raise
 
 

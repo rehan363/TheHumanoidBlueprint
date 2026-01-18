@@ -25,9 +25,13 @@ class VectorStore:
                 timeout=10.0
             )
             self.collection_name = settings.qdrant_collection_name
-            logger.info(f"VectorStore initialized with collection: {self.collection_name}")
+            logger.info(f"VectorStore initialized with collection: {self.collection_name}", extra={"collection_name": self.collection_name, "qdrant_url": settings.qdrant_url})
         except Exception as e:
-            logger.error(f"Failed to initialize VectorStore: {e}")
+            logger.error(
+                f"Failed to initialize VectorStore: {e}",
+                exc_info=True,
+                extra={"error_type": "InitializationError", "qdrant_url": settings.qdrant_url, "exception_message": str(e)}
+            )
             raise ServiceUnavailable("qdrant", f"Failed to connect to Qdrant: {e}")
 
     async def health_check(self) -> bool:
@@ -39,9 +43,14 @@ class VectorStore:
         """
         try:
             collections = self.client.get_collections()
+            logger.info("Qdrant health check successful", extra={"status": "healthy", "collection_name": self.collection_name})
             return True
         except Exception as e:
-            logger.error(f"Qdrant health check failed: {e}")
+            logger.error(
+                f"Qdrant health check failed: {e}",
+                exc_info=True,
+                extra={"error_type": "HealthCheckFailed", "collection_name": self.collection_name, "exception_message": str(e)}
+            )
             return False
 
     async def collection_exists(self) -> bool:
@@ -53,9 +62,15 @@ class VectorStore:
         """
         try:
             collections = self.client.get_collections()
-            return any(col.name == self.collection_name for col in collections.collections)
+            exists = any(col.name == self.collection_name for col in collections.collections)
+            logger.debug(f"Collection {self.collection_name} exists: {exists}", extra={"collection_name": self.collection_name, "exists": exists})
+            return exists
         except Exception as e:
-            logger.error(f"Failed to check collection existence: {e}")
+            logger.error(
+                f"Failed to check collection existence for {self.collection_name}: {e}",
+                exc_info=True,
+                extra={"error_type": "CollectionExistenceCheckFailed", "collection_name": self.collection_name, "exception_message": str(e)}
+            )
             return False
 
     async def create_collection(self) -> bool:
@@ -67,7 +82,7 @@ class VectorStore:
         """
         try:
             if await self.collection_exists():
-                logger.info(f"Collection {self.collection_name} already exists")
+                logger.info(f"Collection {self.collection_name} already exists", extra={"collection_name": self.collection_name})
                 return True
 
             self.client.create_collection(
@@ -91,11 +106,15 @@ class VectorStore:
                 field_schema="keyword"
             )
 
-            logger.info(f"Created collection: {self.collection_name}")
+            logger.info(f"Created collection: {self.collection_name}", extra={"collection_name": self.collection_name, "vector_size": settings.qdrant_vector_size, "distance": Distance.COSINE.value})
             return True
 
         except Exception as e:
-            logger.error(f"Failed to create collection: {e}")
+            logger.error(
+                f"Failed to create collection {self.collection_name}: {e}",
+                exc_info=True,
+                extra={"error_type": "CollectionCreationError", "collection_name": self.collection_name, "exception_message": str(e)}
+            )
             raise VectorSearchError(f"Failed to create collection: {e}")
 
     async def upsert_chunks(self, chunks: List[TextChunk]) -> int:
@@ -141,7 +160,7 @@ class VectorStore:
                 points.append(point)
 
             if not points:
-                logger.warning("No valid points to upsert")
+                logger.warning("No valid points to upsert", extra={"num_input_chunks": len(chunks), "collection_name": self.collection_name})
                 return 0
 
             self.client.upsert(
@@ -149,11 +168,15 @@ class VectorStore:
                 points=points
             )
 
-            logger.info(f"Upserted {len(points)} chunks to Qdrant")
+            logger.info(f"Upserted {len(points)} chunks to Qdrant", extra={"num_upserted_points": len(points), "collection_name": self.collection_name})
             return len(points)
 
         except Exception as e:
-            logger.error(f"Failed to upsert chunks: {e}")
+            logger.error(
+                f"Failed to upsert chunks to collection {self.collection_name}: {e}",
+                exc_info=True,
+                extra={"error_type": "UpsertChunksError", "collection_name": self.collection_name, "num_input_chunks": len(chunks), "exception_message": str(e)}
+            )
             raise VectorSearchError(f"Failed to upsert chunks: {e}")
 
     async def search(
@@ -218,11 +241,18 @@ class VectorStore:
                 }
                 results.append(result)
 
-            logger.info(f"Found {len(results)} results for query (top_k={top_k}, threshold={score_threshold})")
+            logger.info(
+                f"Found {len(results)} results for query (top_k={top_k}, threshold={score_threshold})",
+                extra={"collection_name": self.collection_name, "num_results": len(results), "top_k": top_k, "score_threshold": score_threshold, "week_filter": week_filter}
+            )
             return results
 
         except Exception as e:
-            logger.error(f"Vector search failed: {e}")
+            logger.error(
+                f"Vector search failed for collection {self.collection_name}: {e}",
+                exc_info=True,
+                extra={"error_type": "VectorSearchError", "collection_name": self.collection_name, "top_k": top_k, "score_threshold": score_threshold, "week_filter": week_filter, "exception_message": str(e)}
+            )
             raise VectorSearchError(f"Search operation failed: {e}")
 
     async def get_chunk_by_id(self, chunk_id: str) -> Optional[Dict[str, Any]]:
@@ -255,7 +285,11 @@ class VectorStore:
             }
 
         except Exception as e:
-            logger.error(f"Failed to retrieve chunk {chunk_id}: {e}")
+            logger.error(
+                f"Failed to retrieve chunk {chunk_id} from collection {self.collection_name}: {e}",
+                exc_info=True,
+                extra={"error_type": "RetrieveChunkError", "chunk_id": chunk_id, "collection_name": self.collection_name, "exception_message": str(e)}
+            )
             raise VectorSearchError(f"Failed to retrieve chunk: {e}")
 
     async def get_collection_stats(self) -> Dict[str, Any]:
@@ -274,7 +308,11 @@ class VectorStore:
                 "status": collection_info.status.value
             }
         except Exception as e:
-            logger.error(f"Failed to get collection stats: {e}")
+            logger.error(
+                f"Failed to get collection stats for {self.collection_name}: {e}",
+                exc_info=True,
+                extra={"error_type": "CollectionStatsError", "collection_name": self.collection_name, "exception_message": str(e)}
+            )
             return {}
 
 

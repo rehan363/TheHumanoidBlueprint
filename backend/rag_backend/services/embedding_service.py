@@ -19,9 +19,13 @@ class EmbeddingService:
         try:
             genai.configure(api_key=settings.embedding_api_key)
             self.model_name = settings.gemini_embedding_model
-            logger.info(f"EmbeddingService initialized with model: {self.model_name}")
+            logger.info(f"EmbeddingService initialized with model: {self.model_name}", extra={"model_name": self.model_name})
         except Exception as e:
-            logger.error(f"Failed to initialize EmbeddingService: {e}")
+            logger.error(
+                f"Failed to initialize EmbeddingService: {e}",
+                exc_info=True,
+                extra={"error_type": "InitializationError", "exception_message": str(e)}
+            )
             raise EmbeddingGenerationError(f"Embedding service initialization failed: {e}")
 
     async def generate_embedding(self, text: str) -> List[float]:
@@ -50,16 +54,34 @@ class EmbeddingService:
             embedding = result['embedding']
 
             if not embedding or len(embedding) != settings.qdrant_vector_size:
-                raise EmbeddingGenerationError(
-                    f"Invalid embedding dimension: expected {settings.qdrant_vector_size}, got {len(embedding)}"
+                error_msg = f"Invalid embedding dimension: expected {settings.qdrant_vector_size}, got {len(embedding) if embedding else 'None'}"
+                logger.error(
+                    error_msg,
+                    extra={
+                        "error_type": "EmbeddingDimensionError",
+                        "text_length": len(text),
+                        "expected_dimension": settings.qdrant_vector_size,
+                        "actual_dimension": len(embedding) if embedding else 0
+                    }
                 )
+                raise EmbeddingGenerationError(error_msg)
 
-            logger.debug(f"Generated embedding for text of length {len(text)}")
+            logger.debug(f"Generated embedding for text of length {len(text)}", extra={"text_length": len(text)})
             return embedding
 
+        except EmbeddingGenerationError as e:
+            logger.error(
+                f"Embedding generation error: {e}",
+                exc_info=True,
+                extra={"error_type": "EmbeddingGenerationError", "text_length": len(text), "exception_message": str(e)}
+            )
+            raise
         except Exception as e:
-            logger.error(f"Embedding generation error: {e}")
-            raise EmbeddingGenerationError(f"Failed to generate embedding: {e}")
+            logger.error(
+                f"Unexpected embedding generation error: {e}",
+                exc_info=True,
+                extra={"error_type": "UnexpectedError", "text_length": len(text), "exception_message": str(e)}
+            )
 
     async def generate_query_embedding(self, query: str) -> List[float]:
         """
@@ -87,16 +109,34 @@ class EmbeddingService:
             embedding = result['embedding']
 
             if not embedding or len(embedding) != settings.qdrant_vector_size:
-                raise EmbeddingGenerationError(
-                    f"Invalid embedding dimension: expected {settings.qdrant_vector_size}, got {len(embedding)}"
+                error_msg = f"Invalid query embedding dimension: expected {settings.qdrant_vector_size}, got {len(embedding) if embedding else 'None'}"
+                logger.error(
+                    error_msg,
+                    extra={
+                        "error_type": "QueryEmbeddingDimensionError",
+                        "query_length": len(query),
+                        "expected_dimension": settings.qdrant_vector_size,
+                        "actual_dimension": len(embedding) if embedding else 0
+                    }
                 )
+                raise EmbeddingGenerationError(error_msg)
 
-            logger.debug(f"Generated query embedding for text of length {len(query)}")
+            logger.debug(f"Generated query embedding for text of length {len(query)}", extra={"query_length": len(query)})
             return embedding
 
+        except EmbeddingGenerationError as e:
+            logger.error(
+                f"Query embedding generation error: {e}",
+                exc_info=True,
+                extra={"error_type": "QueryEmbeddingGenerationError", "query_length": len(query), "exception_message": str(e)}
+            )
+            raise
         except Exception as e:
-            logger.error(f"Query embedding generation error: {e}")
-            raise EmbeddingGenerationError(f"Failed to generate query embedding: {e}")
+            logger.error(
+                f"Unexpected query embedding generation error: {e}",
+                exc_info=True,
+                extra={"error_type": "UnexpectedError", "query_length": len(query), "exception_message": str(e)}
+            )
 
     async def generate_batch_embeddings(self, texts: List[str]) -> List[List[float]]:
         """
@@ -124,12 +164,22 @@ class EmbeddingService:
                 embedding = await self.generate_embedding(text)
                 embeddings.append(embedding)
 
-            logger.info(f"Generated {len(embeddings)} embeddings in batch")
+            logger.info(f"Generated {len(embeddings)} embeddings in batch", extra={"num_generated_embeddings": len(embeddings), "num_input_texts": len(texts)})
             return embeddings
 
+        except EmbeddingGenerationError as e:
+            logger.error(
+                f"Batch embedding generation error: {e}",
+                exc_info=True,
+                extra={"error_type": "BatchEmbeddingGenerationError", "num_texts": len(texts), "exception_message": str(e)}
+            )
+            raise
         except Exception as e:
-            logger.error(f"Batch embedding generation error: {e}")
-            raise EmbeddingGenerationError(f"Failed to generate batch embeddings: {e}")
+            logger.error(
+                f"Unexpected batch embedding generation error: {e}",
+                exc_info=True,
+                extra={"error_type": "UnexpectedError", "num_texts": len(texts), "exception_message": str(e)}
+            )
 
 
 # Global embedding service instance

@@ -1,15 +1,15 @@
 ---
 sidebar_position: 9
-title: "Week 9 - Isaac ROS & VSLAM"
+title: "Chapter 9 - Isaac ROS & VSLAM"
 description: "GPU-accelerated perception with Isaac ROS, Visual SLAM, and 3D reconstruction using nvblox"
 keywords: [Isaac ROS, VSLAM, nvblox, cuVSLAM, GPU perception, 3D reconstruction, ROS 2, NVIDIA]
 last_updated: "2025-12-29"
 estimated_reading_time: 25
 ---
 
-# Week 9: Isaac ROS & VSLAM
+# Chapter 9: Isaac ROS & VSLAM
 
-Building on Isaac Sim from Week 8, we now explore NVIDIA's GPU-accelerated perception stack. Isaac ROS brings the power of NVIDIA GPUs to robot perception, enabling real-time Visual SLAM, 3D reconstruction, and AI-powered sensing that runs orders of magnitude faster than CPU alternatives.
+Building on Isaac Sim from Chapter 8, we now explore NVIDIA's GPU-accelerated perception stack. Isaac ROS brings the power of NVIDIA GPUs to robot perception, enabling real-time Visual SLAM, 3D reconstruction, and AI-powered sensing that runs orders of magnitude faster than CPU alternatives.
 
 ---
 
@@ -1022,7 +1022,7 @@ GPU-accelerated perception fundamentally changes what's possible in real-time ro
 
 ## Next Week Preview
 
-In **Week 10**, we explore **Nav2 Path Planning**:
+In **Chapter 10**, we explore **Nav2 Path Planning**:
 - ROS 2 Navigation Stack (Nav2) architecture
 - Costmap configuration with nvblox
 - Path planning algorithms (NavFn, Smac, TEB)
