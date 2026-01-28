@@ -223,7 +223,7 @@ export default function Home(): ReactNode {
               <div className={styles.ctaContent}>
                 <h2>Ready to build the future?</h2>
                 <p>Join thousands of engineers mastering the physical AI stack.</p>
-                <Link className="button button--secondary button--lg" to="/module1-ros2/chapter1-foundations">
+                <Link className="button button--secondary button--lg" to="/docs/module1-ros2/chapter1-foundations">
                   GET STARTED NOW
                 </Link>
               </div>
