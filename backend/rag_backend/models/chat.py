@@ -5,6 +5,7 @@ Pydantic models for chat API requests and responses.
 from pydantic import BaseModel, Field, validator
 from typing import Optional, Literal
 from datetime import datetime
+from uuid import UUID
 
 
 class SelectedTextContext(BaseModel):
@@ -27,7 +28,8 @@ class ChatQueryRequest(BaseModel):
         None,
         description="Context for text selection queries (required when query_type is text_selection)"
     )
-    session_id: Optional[str] = Field(None, description="Session identifier for conversation history")
+    session_id: Optional[UUID] = Field(None, description="Session identifier for conversation history")
+    auth_token: Optional[str] = Field(None, description="Better-Auth session token for personalization")
 
     @validator("context")
     def validate_context(cls, v, values):
@@ -59,13 +61,15 @@ class ChatQueryResponse(BaseModel):
     answer: str = Field(..., description="Generated answer from RAG pipeline")
     citations: list[Citation] = Field(default_factory=list, description="Source citations")
     query_type: Literal["full_text", "text_selection"] = Field(..., description="Type of query processed")
-    session_id: Optional[str] = Field(None, description="Session identifier")
+    session_id: Optional[UUID] = Field(None, description="Session identifier")
     processing_time_ms: Optional[int] = Field(None, description="Time taken to process query (milliseconds)")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Response timestamp")
 
+
     class Config:
         json_encoders = {
-            datetime: lambda v: v.isoformat()
+            datetime: lambda v: v.isoformat(),
+            UUID: lambda v: str(v)
         }
 
 
@@ -75,9 +79,11 @@ class ErrorResponse(BaseModel):
     error: str = Field(..., description="Error type")
     message: str = Field(..., description="Human-readable error message")
     details: Optional[dict] = Field(None, description="Additional error details")
+    request_id: Optional[str] = Field(None, description="Unique identifier for the request")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Error timestamp")
 
     class Config:
         json_encoders = {
-            datetime: lambda v: v.isoformat()
+            datetime: lambda v: v.isoformat(),
+            UUID: lambda v: str(v)
         }

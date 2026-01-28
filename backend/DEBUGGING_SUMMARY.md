@@ -2,121 +2,60 @@
 
 ## 🔍 Diagnostic Results
 
-### Phase 1: Environment & Connectivity - COMPLETED ✓
-
+### 1. Environment & Connectivity - COMPLETED ✓
 | Component | Status | Details |
 |-----------|--------|---------|
-| **Environment Variables** | ✅ FIXED | `.env` had `GEMINI_API_KEY_1` instead of `GEMINI_API_KEY` - now corrected |
-| **Qdrant Connection** | ❌ FAILED | 404 Not Found - Cluster appears to be deleted or URL is invalid |
-| **Gemini API** | ❌ FAILED | 400 API_KEY_INVALID - All 3 API keys appear to be invalid/expired |
-| **Neon Database** | ⏸️ NOT TESTED | Will test after fixing Qdrant and Gemini |
+| **Environment Variables** | ✅ FIXED | Updated to support `NEW_GEMINI_API_KEY` |
+| **Qdrant Connection** | ✅ FIXED | Connection established and collection schema reset to use UUIDs |
+| **Gemini API** | ✅ FIXED | Using `NEW_GEMINI_API_KEY` provided by user |
+| **Neon Database** | ⏸️ PENDING | Ready for testing |
+
+### 2. Data Restoration - COMPLETED ✓
+| Step | Status | Details |
+|------|--------|---------|
+| **File Refactoring** | ✅ DONE | Renamed "Week" to "Chapter" across all 13 docs |
+| **Indexing Script** | ✅ DONE | Updated to handle chapter files and UUID IDs |
+| **Vector Store** | ✅ DONE | Populated with 1226 vectors for all 13 chapters |
+| **Chunking** | ✅ DONE | Fixed infinite loop in MarkdownChunker |
 
 ---
 
-## 🚨 Critical Issues Found
+## 🚨 Issues Resolved
 
-### Issue #1: Qdrant Cluster Not Found (404)
-**Error**: `Unexpected Response: 404 (Not Found)`
+### Issue #1: Qdrant ID Format Error (400)
+**Error**: `Bad Request: value chunk_xxx is not a valid point ID`
+**Resolution**: Updated `MarkdownChunker` to generate deterministic UUIDs using `uuid.uuid5`, which is a valid Qdrant point ID format.
 
-**Root Cause**: The Qdrant cluster at the URL in `.env` doesn't exist or was deleted.
+### Issue #2: Chunking Infinite Loop
+**Error**: Indexing would hang indefinitely on some files.
+**Root Cause**: Intersection of small chunks and large overlaps could prevent the `start` pointer from advancing.
+**Resolution**: Added safety checks in `MarkdownChunker.split_into_chunks` to ensure progress always happens.
 
-**Impact**: 
-- Vector search completely broken
-- RAG system cannot retrieve context
-- All queries will fail with "No relevant content found"
-
-**Resolution Options**:
-1. **Check Qdrant Cloud Dashboard** - Verify if cluster exists
-2. **Create New Cluster** - If deleted, create new free tier cluster
-3. **Update `.env`** - Update `QDRANT_URL` and `QDRANT_API_KEY` with new cluster credentials
+### Issue #3: Terminology Alignment
+**Action**: Systematically replaced "Week" with "Chapter" across the frontend, docs, and backend processing scripts to ensure consistency.
 
 ---
 
-### Issue #2: Invalid Gemini API Keys
-**Error**: `400 API key not valid. Please pass a valid API key.`
+## 📋 Next Steps
 
-**Root Cause**: All 3 Gemini API keys in `.env` are invalid/expired/revoked.
+### IMMEDIATE (Integration)
 
-**Impact**:
-- LLM generation completely broken
-- Cannot generate responses to user queries
-- Backend will return 503 Service Unavailable
+- [ ] **1. Test RAG Retrieval**
+  - Run `python scripts/test_rag.py` (needs to be created) to verify context retrieval is working correctly with the new "chapter" schema.
 
-**Resolution Options**:
-1. **Generate New Gemini Key** - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. **Switch to OpenRouter** - Use free models via OpenRouter (recommended for reliability)
+- [ ] **2. Test Neon Database**
+  - Verify if user chat history can be saved and retrieved.
 
----
-
-## 📋 Next Steps (Priority Order)
-
-### IMMEDIATE (Blocking)
-
-- [ ] **1. Fix Gemini API Key**
-  - **Option A**: Get new Gemini API key from Google AI Studio
-  - **Option B**: Switch to OpenRouter (RECOMMENDED)
-    - Add `OPENROUTER_API_KEY` to `.env`
-    - Modify `llm_service.py` to use OpenRouter endpoint
-    - Use free model: `google/gemini-2.0-flash-exp:free` or `deepseek/deepseek-chat`
-
-- [ ] **2. Fix Qdrant Cluster**
-  - Login to [Qdrant Cloud](https://cloud.qdrant.io/)
-  - Check if cluster exists
-  - If not, create new free tier cluster
-  - Update `.env` with new credentials
-  - Run `python scripts/setup_qdrant.py` to initialize collection
-
-### AFTER FIXES
-
-- [ ] **3. Populate Vector Database**
-  - Run `python scripts/index_docs.py --docs-path ../physical-ai-textbook/docs`
-  - Verify vectors are indexed
-
-- [ ] **4. Test Neon Database**
-  - Test connection to Postgres
-  - Run `python scripts/setup_database.py` if needed
-
-- [ ] **5. Integration Test**
-  - Start backend: `uvicorn rag_backend.main:app --reload`
-  - Test `/api/health` endpoint
-  - Test `/api/chat/query` with sample question
+- [ ] **3. Start Backend Service**
+  - Run `uvicorn rag_backend.main:app --reload`
+  - Perform end-to-end chat test via UI.
 
 ---
 
-## 🔧 Scripts Created for Debugging
+## 🔧 Updated Scripts
 
 | Script | Purpose | Status |
 |--------|---------|--------|
-| `scripts/debug_connectivity.py` | Full connectivity check | ✅ Complete |
-| `scripts/test_qdrant.py` | Detailed Qdrant diagnostics | ✅ Complete |
-| `scripts/test_gemini.py` | Gemini API validation | ✅ Complete |
-
----
-
-## 💡 Recommendation: Switch to OpenRouter
-
-**Why OpenRouter?**
-- ✅ More reliable than free Gemini tier
-- ✅ No quota issues (better rate limits)
-- ✅ Multiple free models available
-- ✅ OpenAI-compatible API (easy migration)
-
-**Migration Effort**: ~15 minutes (modify `llm_service.py` only)
-
----
-
-## 📝 User Action Required
-
-**Please choose one of the following paths:**
-
-### Path A: Fix Gemini + Qdrant (Traditional)
-1. Get new Gemini API key from Google AI Studio
-2. Login to Qdrant Cloud and verify/create cluster
-3. Update `.env` with new credentials
-
-### Path B: Switch to OpenRouter + Fix Qdrant (RECOMMENDED)
-1. Get OpenRouter API key from [openrouter.ai](https://openrouter.ai/)
-2. Login to Qdrant Cloud and verify/create cluster
-3. Update `.env` and modify `llm_service.py`
-
-**Which path would you like to take?**
+| `scripts/index_docs.py` | Full document indexing | ✅ FIXED |
+| `scripts/setup_qdrant.py` | Schema initialization | ✅ FIXED |
+| `scripts/test_embeddings.py` | Embedding API validation | ✅ FIXED |

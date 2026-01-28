@@ -105,6 +105,10 @@ export interface QueryRequest {
    * Optional: A unique session identifier for the conversation.
    */
   session_id?: string;
+  /**
+   * Optional: Better-Auth session token for personalization.
+   */
+  auth_token?: string;
 }
 
 /**

@@ -91,6 +91,7 @@ class MultiProviderLLMService:
         query: str,
         context_chunks: List[Dict[str, Any]],
         system_prompt: Optional[str] = None,
+        user_profile: Optional[Dict[str, Any]] = None,
         use_cache: bool = True
     ) -> str:
         """
@@ -100,6 +101,7 @@ class MultiProviderLLMService:
             query: User query
             context_chunks: Retrieved context chunks
             system_prompt: Optional system prompt override
+            user_profile: Optional user profile data for personalization
             use_cache: Whether to use caching
             
         Returns:
@@ -108,8 +110,8 @@ class MultiProviderLLMService:
         try:
             context_str = self._build_context_string(context_chunks)
             
-            # Check cache
-            cache_key = self._get_cache_key(query, context_str)
+            # Check cache - include profile in cache key if present
+            cache_key = self._get_cache_key(query, context_str + str(user_profile))
             if use_cache and cache_key in self._query_cache and self._is_cache_valid(cache_key):
                 logger.info("Cache hit for query")
                 return self._query_cache[cache_key]
@@ -119,7 +121,7 @@ class MultiProviderLLMService:
                 self._clean_expired_cache()
             
             # Build prompt
-            prompt = self._build_prompt(query, context_str, system_prompt)
+            prompt = self._build_prompt(query, context_str, system_prompt, user_profile)
             
             # Try providers based on strategy
             response = await self._generate_with_fallback(prompt)
@@ -227,7 +229,8 @@ class MultiProviderLLMService:
         self,
         query: str,
         context: str,
-        system_prompt: Optional[str] = None
+        system_prompt: Optional[str] = None,
+        user_profile: Optional[Dict[str, Any]] = None
     ) -> str:
         """Build the full prompt for the LLM."""
         default_system_prompt = """You are an AI assistant for a Physical AI textbook. Your role is to answer questions based ONLY on the provided context from the textbook.
@@ -238,9 +241,25 @@ IMPORTANT RULES:
 3. Always cite your sources by referencing the Week and section mentioned in the context
 4. Be concise but accurate
 5. Do not make up information or use knowledge outside the provided context
-6. If the question is ambiguous, ask for clarification or provide the most relevant information from the context
+6. If the question is ambiguous, ask for clarification or provide the most relevant information from the context"""
 
-Remember: Your credibility depends on accurate, cited answers from the textbook content only."""
+        if user_profile:
+            python_exp = user_profile.get("python_experience", 5)
+            hardware_exp = user_profile.get("hardware_experience", 5)
+            name = user_profile.get("name", "Student")
+            
+            # Personalization Logic
+            personalization = f"\n\nUSER PROFILE:\n- Name: {name}\n- Python Level: {python_exp}/10\n- Hardware/Robotics Level: {hardware_exp}/10\n"
+            
+            if python_exp < 3:
+                personalization += "- Keep coding concepts extremely simple and explain all Python syntax.\n"
+            elif python_exp > 8:
+                personalization += "- You can use advanced technical terminology and complex code snippets.\n"
+                
+            if hardware_exp < 3:
+                personalization += "- Explain physical components (servos, sensors) in basic terms.\n"
+            
+            default_system_prompt += personalization
 
         system = system_prompt or default_system_prompt
 

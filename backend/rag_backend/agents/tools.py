@@ -9,7 +9,7 @@ import logging
 from typing import Optional, List, Dict, Any
 from agents import function_tool
 
-from rag_backend.services.embedding_service import get_embedding_service
+from rag_backend.services.embedding_service_multi import get_embedding_service
 from rag_backend.services.vector_store import get_vector_store
 from rag_backend.config import settings
 

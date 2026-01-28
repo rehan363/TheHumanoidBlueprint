@@ -41,6 +41,7 @@ class EmbeddingService:
         Raises:
             EmbeddingGenerationError: If embedding generation fails
         """
+        logger.info(f"Generating embedding for text length: {len(text)}")
         try:
             if not text or not text.strip():
                 raise EmbeddingGenerationError("Cannot generate embedding for empty text")
@@ -82,6 +83,7 @@ class EmbeddingService:
                 exc_info=True,
                 extra={"error_type": "UnexpectedError", "text_length": len(text), "exception_message": str(e)}
             )
+            raise EmbeddingGenerationError(f"Embedding generation failed: {e}")
 
     async def generate_query_embedding(self, query: str) -> List[float]:
         """
@@ -137,6 +139,7 @@ class EmbeddingService:
                 exc_info=True,
                 extra={"error_type": "UnexpectedError", "query_length": len(query), "exception_message": str(e)}
             )
+            raise EmbeddingGenerationError(f"Query embedding generation failed: {e}")
 
     async def generate_batch_embeddings(self, texts: List[str]) -> List[List[float]]:
         """

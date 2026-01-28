@@ -7,13 +7,14 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ChatMessage, QueryRequest, QueryResponse, ErrorResponse } from '../components/RAGChatbot/types';
+import { authClient } from '../lib/auth-client';
 
 /**
  * Generates a UUID v4 string.
  * @returns {string} A UUID v4 string.
  */
 function uuidv4(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
@@ -130,17 +131,23 @@ export function useChatAPI(messages: ChatMessage[], setMessages: (newMessages: C
       setMessages([...messages, userMessage]);
 
       try {
+        // Get the current session token from Better-Auth cookies
+        const tokenMatch = document.cookie.match(/better-auth\.session_token=([^;]+)/) ||
+          document.cookie.match(/better-auth\.session-token=([^;]+)/);
+        const token = tokenMatch ? tokenMatch[1] : null;
+
         const requestBody: QueryRequest = {
           query,
           query_type: queryType,
           context,
-          session_id: sessionId, // Add session_id to the request
+          session_id: sessionId,
         };
 
         const response = await fetch(`${API_BASE_URL}/query`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : '',
           },
           body: JSON.stringify(requestBody),
         });
@@ -172,6 +179,12 @@ export function useChatAPI(messages: ChatMessage[], setMessages: (newMessages: C
 
         // Parse successful response
         const data: QueryResponse = await response.json();
+
+        // Update session ID if backend provided a different one
+        if (data.session_id && data.session_id !== sessionId) {
+          setSessionId(data.session_id);
+          sessionStorage.setItem('sessionId', data.session_id);
+        }
 
         // Add assistant message
         const assistantMessage: ChatMessage = {

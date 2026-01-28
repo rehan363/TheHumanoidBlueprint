@@ -1,18 +1,17 @@
 {
-  "last_indexed": null,
-  "files_processed": 0,
-  "chunks_created": 0,
-  "chunks_indexed": 0,
+  "last_indexed": "2026-01-18T16:29:33.395391",
+  "files_processed": 13,
+  "chunks_created": 1226,
+  "chunks_indexed": 1226,
   "errors": 0,
   "collection_stats": {
     "collection_name": "physical_ai_textbook",
-    "vectors_count": 0,
-    "points_count": 0,
-    "status": "not_initialized"
+    "points_count": 1226,
+    "status": "green"
   },
   "settings": {
-    "chunk_size": 768,
-    "chunk_overlap": 100,
+    "chunk_size": 512,
+    "chunk_overlap": 51,
     "embedding_model": "models/text-embedding-004",
     "vector_size": 768
   }

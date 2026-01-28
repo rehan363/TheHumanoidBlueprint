@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     gemini_api_key_1: str = ""  # Primary key for orchestrator and some sub-agents
     gemini_api_key_2: str = ""  # Secondary key for embeddings and other sub-agents
     gemini_api_key_3: str = ""  # Tertiary key for remaining sub-agents
+    new_gemini_api_key: str = ""  # New fresh API key (highest priority)
     gemini_model: str = "gemini-2.0-flash-exp"
     gemini_embedding_model: str = "models/text-embedding-004"
     gemini_temperature: float = 0.7
@@ -42,6 +43,14 @@ class Settings(BaseSettings):
     # "auto" will try Gemini first, fallback to OpenRouter if quota exceeded
     llm_provider: str = "auto"
     primary_llm_model: str = "gemini-2.0-flash-exp"  # Used when provider is "auto"
+
+    # Embedding Provider Configuration
+    # Options: "huggingface", "jina", "gemini", "auto"
+    # "auto" will try HuggingFace first (free, no key required)
+    embedding_provider: str = "auto"
+    huggingface_api_key: str = ""  # Optional - works without key for public models
+    huggingface_embedding_model: str = "sentence-transformers/all-mpnet-base-v2"  # 768 dims
+    jina_api_key: str = ""  # Optional - for Jina AI embeddings
 
     # Qdrant Configuration
     qdrant_url: str
@@ -64,7 +73,7 @@ class Settings(BaseSettings):
 
     # RAG Pipeline Configuration
     top_k_results: int = 5
-    similarity_threshold: float = 0.7
+    similarity_threshold: float = 0.3
     chunk_size: int = 768
     chunk_overlap: int = 100
 
@@ -104,14 +113,17 @@ class Settings(BaseSettings):
         if not self.gemini_api_key and self.gemini_api_key_1:
             self.gemini_api_key = self.gemini_api_key_1
 
-        # Allocate keys across services
-        self.orchestrator_api_key = self.gemini_api_key_1 or self.gemini_api_key
-        self.embedding_api_key = self.gemini_api_key_2 or self.gemini_api_key
-        self.retrieval_agent_api_key = self.gemini_api_key_1 or self.gemini_api_key
-        self.explanation_agent_api_key = self.gemini_api_key_1 or self.gemini_api_key
-        self.comparison_agent_api_key = self.gemini_api_key_1 or self.gemini_api_key
-        self.clarification_agent_api_key = self.gemini_api_key_3 or self.gemini_api_key
-        self.summary_agent_api_key = self.gemini_api_key_3 or self.gemini_api_key
+        # Use new_gemini_api_key as primary if available
+        primary_key = self.new_gemini_api_key or self.gemini_api_key_1 or self.gemini_api_key
+
+        # Allocate keys across services - prioritize new key for all
+        self.orchestrator_api_key = primary_key
+        self.embedding_api_key = primary_key  # Use new key for embeddings
+        self.retrieval_agent_api_key = primary_key
+        self.explanation_agent_api_key = primary_key
+        self.comparison_agent_api_key = primary_key
+        self.clarification_agent_api_key = primary_key
+        self.summary_agent_api_key = primary_key
 
         logger.info("="*60)
         logger.info("API Keys Allocated:")

@@ -5,11 +5,13 @@ RAG pipeline orchestrating retrieval and generation.
 from typing import List, Optional, Tuple
 import time
 import logging
-from rag_backend.services.embedding_service import get_embedding_service
+import uuid
+from rag_backend.services.embedding_service_multi import get_embedding_service
 from rag_backend.services.vector_store import get_vector_store
 from rag_backend.services.llm_service_multi import get_llm_service
 from rag_backend.models.chat import ChatQueryRequest, ChatQueryResponse, Citation
 from rag_backend.config import settings
+from rag_backend.services.auth_verifier import auth_verifier
 from rag_backend.utils.error_handlers import (
     EmbeddingGenerationError,
     VectorSearchError,
@@ -47,17 +49,24 @@ class RAGPipeline:
         query_id = str(uuid.uuid4()) # Generate a unique ID for this query transaction
 
         try:
-            # Step 1: Generate query embedding
+            # Step 1: Verify user profile if auth_token provided
+            user_profile = None
+            if request.auth_token:
+                user_profile = await auth_verifier.verify_session(request.auth_token)
+                if user_profile:
+                    logger.info(f"Using personalized profile for user: {user_profile.get('name')}")
+
+            # Step 2: Generate query embedding
             logger.info(
                 f"Processing {request.query_type} query: {request.query[:50]}...",
                 extra={"query_id": query_id, "query_type": request.query_type, "session_id": str(request.session_id)}
             )
             query_embedding = await self.embedding_service.generate_query_embedding(request.query)
 
-            # Step 2: Retrieve relevant chunks
+            # Step 3: Retrieve relevant chunks
             context_chunks = await self._retrieve_context(query_embedding, request)
 
-            # Step 3: Handle case with no relevant content
+            # Step 4: Handle case with no relevant content
             if not context_chunks:
                 logger.warning(
                     "No relevant chunks found for query",
@@ -72,14 +81,15 @@ class RAGPipeline:
                     processing_time_ms=processing_time_ms
                 )
 
-            # Step 4: Enhance context for text_selection queries
+            # Step 5: Enhance context for text_selection queries
             if request.query_type == "text_selection" and request.context:
                 context_chunks = await self._enhance_with_selected_text(context_chunks, request.context)
 
-            # Step 5: Generate response using LLM
+            # Step 6: Generate response using LLM (with personalization)
             answer = await self.llm_service.generate_response(
                 query=request.query,
-                context_chunks=context_chunks
+                context_chunks=context_chunks,
+                user_profile=user_profile
             )
 
             # Step 6: Extract citations

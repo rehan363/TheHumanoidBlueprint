@@ -4,6 +4,7 @@ Custom exception handlers and error definitions for the RAG backend.
 
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from rag_backend.models.chat import ErrorResponse
 from datetime import datetime
 import logging
@@ -64,6 +65,8 @@ class LLMGenerationError(Exception):
         super().__init__(self.message)
 
 
+from rag_backend.utils.logging_utils import get_request_id
+
 # Exception Handlers
 
 async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
@@ -74,12 +77,13 @@ async def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded) 
         error="rate_limit_exceeded",
         message=exc.message,
         details={"retry_after": exc.retry_after},
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
     return JSONResponse(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        content=error_response.model_dump(),
+        content=jsonable_encoder(error_response),
         headers={"Retry-After": str(exc.retry_after)}
     )
 
@@ -92,12 +96,13 @@ async def service_unavailable_handler(request: Request, exc: ServiceUnavailable)
         error="service_unavailable",
         message="AI assistant temporarily offline. Browse content normally.",
         details={"service": exc.service_name},
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
     return JSONResponse(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        content=error_response.model_dump()
+        content=jsonable_encoder(error_response)
     )
 
 
@@ -109,12 +114,13 @@ async def invalid_request_handler(request: Request, exc: InvalidRequest) -> JSON
         error="invalid_request",
         message=exc.message,
         details=exc.details,
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content=error_response.model_dump()
+        content=jsonable_encoder(error_response)
     )
 
 
@@ -125,12 +131,13 @@ async def embedding_generation_error_handler(request: Request, exc: EmbeddingGen
     error_response = ErrorResponse(
         error="embedding_error",
         message="Failed to process your query. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=error_response.model_dump()
+        content=jsonable_encoder(error_response)
     )
 
 
@@ -141,12 +148,13 @@ async def vector_search_error_handler(request: Request, exc: VectorSearchError) 
     error_response = ErrorResponse(
         error="search_error",
         message="Failed to search textbook content. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=error_response.model_dump()
+        content=jsonable_encoder(error_response)
     )
 
 
@@ -157,12 +165,13 @@ async def llm_generation_error_handler(request: Request, exc: LLMGenerationError
     error_response = ErrorResponse(
         error="generation_error",
         message="Failed to generate response. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=error_response.model_dump()
+        content=jsonable_encoder(error_response)
     )
 
 
@@ -173,12 +182,13 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
     error_response = ErrorResponse(
         error="internal_error",
         message="An unexpected error occurred. Please try again.",
+        request_id=get_request_id(),
         timestamp=datetime.utcnow()
     )
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=error_response.model_dump()
+        content=jsonable_encoder(error_response)
     )
 
 

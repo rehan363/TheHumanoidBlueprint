@@ -24,8 +24,11 @@ import styles from './styles.module.css';
  */
 export const RAGChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  // useMemo for a stable initial value to prevent hook loops
+  const initialHistory = React.useMemo(() => [], []);
+
   // useSessionStorage for persisting chat history. The key 'rag-chat-history' is used for storage.
-  const [chatHistory, setChatHistory] = useSessionStorage<ChatMessage[]>('rag-chat-history', []);
+  const [chatHistory, setChatHistory] = useSessionStorage<ChatMessage[]>('rag-chat-history', initialHistory);
 
   // useChatAPI hook provides functionality for sending queries to the backend.
   const { isLoading, error, sendQuery, clearError, rateLimitSeconds } = useChatAPI(chatHistory, setChatHistory);

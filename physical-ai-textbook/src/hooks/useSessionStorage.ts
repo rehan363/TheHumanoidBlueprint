@@ -44,7 +44,7 @@ function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T | ((v
       console.warn(`Error reading sessionStorage key “${key}”:`, error);
       return initialValue;
     }
-  }, [initialValue, key]);
+  }, [key]); // initialValue removed from dependencies to prevent loop with literals
 
   /**
    * Fetches chat history from the backend API using the stored `sessionId`.
@@ -65,6 +65,14 @@ function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T | ((v
 
     try {
       const response = await fetch(`${API_BASE_URL}/history/${sessionId}`);
+
+      if (response.status === 404) {
+        // Session not yet persisted to backend, this is normal for new sessions
+        console.log('Session history not found on backend (new session), using local history.');
+        setStoredValue(readValue());
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -90,8 +98,11 @@ function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T | ((v
 
   // Effect to read initial value from backend or sessionStorage on mount
   useEffect(() => {
-    fetchHistoryFromBackend();
-  }, [fetchHistoryFromBackend]);
+    // Temporarily disabled to prevent connection issues
+    // fetchHistoryFromBackend();
+    // Just read from local storage for now
+    setStoredValue(readValue());
+  }, [readValue]);
 
   /**
    * Updates the stored value in both React state and `sessionStorage`.
@@ -117,7 +128,7 @@ function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T | ((v
       console.warn(`Error setting sessionStorage key “${key}”:`, error);
     }
   }, [key, storedValue]);
-  
+
 
   return [storedValue, setValue];
 }

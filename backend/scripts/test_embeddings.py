@@ -9,7 +9,7 @@ load_dotenv()
 
 def test_gemini_embeddings():
     """Test if Gemini embeddings API works"""
-    key = os.getenv("GEMINI_API_KEY_1") or os.getenv("GEMINI_API_KEY_2")
+    key = os.getenv("NEW_GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY_1") or os.getenv("GEMINI_API_KEY_2")
     
     if not key:
         print("[FAIL] No Gemini API keys found")
