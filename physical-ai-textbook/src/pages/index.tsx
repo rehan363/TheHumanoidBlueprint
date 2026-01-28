@@ -52,7 +52,7 @@ function HomepageHeader() {
             <div className={styles.buttons}>
               <Link
                 className="button button--secondary button--lg"
-                to="/module1-ros2/chapter1-foundations">
+                to="/docs/module1-ros2/chapter1-foundations">
                 START READING →
               </Link>
             </div>

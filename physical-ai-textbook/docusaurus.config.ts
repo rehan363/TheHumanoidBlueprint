@@ -53,7 +53,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          routeBasePath: '/', // Set homepage to docs/intro.md
+          routeBasePath: '/docs', // Moved docs to /docs so src/pages/index.tsx is the landing page
           // Configure math rendering plugins
           remarkPlugins: [require('remark-math')],
           rehypePlugins: [require('rehype-katex')],
