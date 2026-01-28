@@ -43,19 +43,19 @@ export default function Root({ children }: { children: React.ReactNode }): JSX.E
     );
   }
 
-  // Gatekeeping logic: If not logged in and not on an auth page, 
-  // we could either redirect or show a simplified locked view.
-  // For this hackathon, we'll allow children to render but we'll 
-  // wrap them in a check or rely on the RAG backend to enforce auth for AI.
+  // Gatekeeping logic: Allow viewing the landing page without login.
+  // Redirect to login only when trying to access documentation or personal features.
+  const isLandingPage = ExecutionEnvironment.canUseDOM &&
+    (window.location.pathname === '/TheHumanoidBlueprint/' ||
+      window.location.pathname === '/TheHumanoidBlueprint' ||
+      window.location.pathname === '/');
 
-  // HOWEVER, the user specifically asked: "a user should not access the course when is it not logged in"
-  const accessDenied = !session && !isAuthPage();
+  const accessDenied = !session && !isAuthPage() && !isLandingPage;
 
   if (accessDenied) {
-    // Redirect to login if on home or docs but not logged in
     if (ExecutionEnvironment.canUseDOM) {
-      window.location.href = window.location.pathname.includes('/panaversity-hackathon-I/')
-        ? '/panaversity-hackathon-I/login'
+      window.location.href = window.location.pathname.includes('/TheHumanoidBlueprint/')
+        ? '/TheHumanoidBlueprint/login'
         : '/login';
     }
     return null;
