@@ -2,6 +2,17 @@
 .env
 .env.local
 .env.*.local
+*.env
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build artifacts
+build/
+dist/
+out/
+.docusaurus/
 
 # Python junk
 __pycache__/
@@ -14,17 +25,20 @@ htmlcov/
 venv/
 ENV/
 env/
+.mypy_cache/
+.ruff_cache/
 
 # IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS junk
 .DS_Store
 Thumbs.db
 
 # Project specific
-backend/rag_backend/**/__pycache__/
-backend/.venv/
 nul
 test_query.json
+backend/auth/test-db*.ts
