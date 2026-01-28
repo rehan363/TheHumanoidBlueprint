@@ -1,107 +1,87 @@
 .authCard {
-    max-width: 450px;
-    margin: 2rem auto;
-    padding: 2.5rem;
-    background: var(--ifm-background-surface-color);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 1px solid var(--ifm-color-emphasis-200);
+    max-width: 480px;
+    margin: 4rem auto;
+    padding: 3rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--glass-border);
+    animation: animate-fade-in 0.5s ease-out;
 }
 
 .authCard h2 {
     margin-bottom: 0.5rem;
-    color: var(--ifm-color-primary);
-    font-size: 1.8rem;
+    color: var(--brand-primary);
+    font-size: 2.2rem;
+    font-family: var(--ifm-heading-font-family);
+    letter-spacing: -1px;
+    font-weight: 800;
 }
 
 .authCard p {
-    color: var(--ifm-color-emphasis-700);
-    margin-bottom: 2rem;
+    color: var(--ifm-font-color-base);
+    opacity: 0.7;
+    margin-bottom: 2.5rem;
 }
 
 .inputGroup {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
 }
 
 .inputGroup label {
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--brand-primary);
 }
 
 .inputGroup input {
-    padding: 0.8rem;
-    border: 1px solid var(--ifm-color-emphasis-300);
-    border-radius: 8px;
-    background: var(--ifm-background-color);
+    padding: 1rem;
+    border: 1.5px solid var(--glass-border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
     color: var(--ifm-font-color-base);
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
+    font-family: inherit;
 }
 
 .inputGroup input:focus {
     outline: none;
-    border-color: var(--ifm-color-primary);
-}
-
-.divider {
-    margin: 2rem 0;
-    border: 0;
-    border-top: 1px solid var(--ifm-color-emphasis-200);
+    border-color: var(--brand-accent);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px var(--brand-accent-glow);
 }
 
 .profileSection h3 {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     margin-bottom: 0.5rem;
-}
-
-.helpText {
-    font-size: 0.85rem;
-    color: var(--ifm-color-emphasis-600);
-    margin-bottom: 1.5rem !important;
-}
-
-.rangeGroup {
-    margin-bottom: 1.5rem;
-}
-
-.rangeGroup label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+    font-family: var(--ifm-heading-font-family);
+    color: var(--brand-primary);
 }
 
 .rangeGroup input[type="range"] {
     width: 100%;
     margin: 0.5rem 0;
-}
-
-.rangeLabels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: var(--ifm-color-emphasis-600);
-}
-
-.errorMessage {
-    background: rgba(255, 0, 0, 0.1);
-    color: #ff4444;
-    padding: 0.8rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    border: 1px solid rgba(255, 0, 0, 0.2);
+    accent-color: var(--brand-accent);
+    cursor: pointer;
 }
 
 .footer {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     text-align: center;
     font-size: 0.9rem;
-    color: var(--ifm-color-emphasis-700);
+    opacity: 0.8;
 }
 
 .footer a {
-    color: var(--ifm-color-primary);
-    font-weight: 600;
+    color: var(--brand-primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: var(--brand-accent);
 }

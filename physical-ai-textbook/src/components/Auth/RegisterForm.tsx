@@ -21,7 +21,7 @@ export default function RegisterForm() {
                 email,
                 password,
                 name,
-                callbackURL: "/",
+                callbackURL: "/panaversity-hackathon-I/",
                 fetchOptions: {
                     body: {
                         python_experience: pythonExp,
@@ -34,7 +34,7 @@ export default function RegisterForm() {
             if (error) {
                 setError(error.message || 'Failed to sign up');
             } else {
-                window.location.href = '/';
+                window.location.href = '/panaversity-hackathon-I/';
             }
         } catch (err) {
             setError('An unexpected error occurred');

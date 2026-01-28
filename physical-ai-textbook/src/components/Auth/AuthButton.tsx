@@ -17,7 +17,8 @@ export default function AuthButton() {
                 </span>
                 <button
                     onClick={() => signOut()}
-                    className="button button--secondary button--sm"
+                    className="button button--primary button--sm"
+                    style={{ padding: '4px 12px' }}
                 >
                     Logout
                 </button>
@@ -26,11 +27,24 @@ export default function AuthButton() {
     }
 
     return (
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Link className="button button--outline button--primary button--sm" to="/login">
-                Login
+        <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+            <Link
+                className="navbar__item navbar__link"
+                to="/login"
+                style={{ fontWeight: 600, color: 'var(--brand-primary)' }}
+            >
+                Sign In
             </Link>
-            <Link className="button button--primary button--sm" to="/signup">
+            <Link
+                className="button button--secondary button--sm"
+                to="/signup"
+                style={{
+                    borderRadius: '8px',
+                    padding: '8px 20px',
+                    fontWeight: 700,
+                    textTransform: 'none'
+                }}
+            >
                 Sign Up
             </Link>
         </div>

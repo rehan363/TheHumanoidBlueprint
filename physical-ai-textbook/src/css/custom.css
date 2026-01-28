@@ -1,33 +1,164 @@
-/**
- * Physical AI & Humanoid Robotics Textbook
- * Custom styling overrides for Docusaurus theme
- *
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap');
 
-/* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* Brand Core: Deep Plum */
+  --brand-primary: #461D34;
+  --brand-primary-light: #5A2643;
+  --brand-primary-dark: #321525;
+
+  /* Sophisticated Accents: Warm Metallic Gold */
+  --brand-accent: #B08D57;
+  --brand-accent-glow: rgba(176, 141, 87, 0.2);
+
+  /* Docusaurus Standard Overrides */
+  --ifm-color-primary: var(--brand-primary);
+  --ifm-color-primary-dark: var(--brand-primary-dark);
+  --ifm-color-primary-darker: #29111e;
+  --ifm-color-primary-darkest: #1f0d17;
+  --ifm-color-primary-light: var(--brand-primary-light);
+  --ifm-color-primary-lighter: #6a2d4f;
+  --ifm-color-primary-lightest: #7e355e;
+
+  /* Typography */
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-heading-font-family: 'Outfit', sans-serif;
+
+  /* Global Backgrounds */
+  --ifm-background-color: #ffffff;
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.95);
+  --ifm-footer-background-color: var(--brand-primary-dark);
+  --ifm-footer-color: rgba(255, 255, 255, 0.7);
+  --ifm-footer-link-color: var(--brand-accent);
+  --ifm-footer-link-hover-color: #ffffff;
+  --ifm-footer-title-color: #ffffff;
+
+  /* Glass Effects */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(70, 29, 52, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(70, 29, 52, 0.05);
+
+  --hero-bg: radial-gradient(circle at 100% 0%, rgba(176, 141, 87, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 0% 100%, rgba(70, 29, 52, 0.03) 0%, transparent 50%);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-background-color: #0d090b;
+  --ifm-navbar-background-color: rgba(13, 9, 11, 0.95);
+
+  --brand-accent: #D4AF37;
+  --brand-accent-glow: rgba(212, 175, 55, 0.15);
+
+  --glass-bg: rgba(30, 20, 25, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+
+  --hero-bg: radial-gradient(circle at 80% 20%, rgba(70, 29, 52, 0.3) 0%, transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(176, 141, 87, 0.05) 0%, transparent 60%);
+
+  --ifm-navbar-link-color: #e2e8f0;
+  --ifm-navbar-background-color: rgba(13, 9, 11, 0.9);
+}
+
+/* Base UI Overrides */
+body {
+  text-wrap: balance;
+  -webkit-font-smoothing: antialiased;
+}
+
+.navbar {
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.navbar--fixed-top {
+  box-shadow: var(--glass-shadow);
+}
+
+/* Force Footer Branding */
+.footer {
+  background-color: var(--brand-primary-dark) !important;
+  border-top: 1px solid var(--glass-border);
+}
+
+.footer__title,
+.footer__link-item,
+.footer__copyright {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.footer__link-item:hover {
+  color: var(--brand-accent) !important;
+  text-decoration: none;
+}
+
+.navbar__brand {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 800;
+  color: var(--brand-primary);
+}
+
+/* Button Refinement */
+.button--primary {
+  background-color: var(--brand-primary);
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button--secondary {
+  background-color: var(--brand-accent);
+  border: none;
+  color: white;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0.75rem 1.75rem;
+  box-shadow: 0 4px 14px 0 var(--brand-accent-glow);
+  transition: all 0.3s ease;
+}
+
+.button--secondary:hover {
+  background-color: #c5a044;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Animation Utility */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Global Aesthetics */
+.hero {
+  background: var(--hero-bg);
+}
+
+.auth-page {
+  min-height: calc(100vh - var(--ifm-navbar-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hero-bg);
+}
+
+/* Glass Detail */
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }

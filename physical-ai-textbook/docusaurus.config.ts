@@ -5,9 +5,9 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Physical AI & Humanoid Robotics',
-  tagline: 'Bridging the gap between the digital brain and the physical body.',
-  favicon: 'img/favicon.ico',
+  title: 'The Humanoid Blueprint',
+  tagline: 'Mastering the Era of Physical AI',
+  favicon: 'img/favicon.png',
 
   // Enable Mermaid for diagrams
   markdown: {
@@ -114,7 +114,7 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Physical AI & Humanoid Robotics',
+      title: 'The Humanoid Blueprint',
       logo: {
         alt: 'Physical AI Textbook Logo',
         src: 'img/logo.svg',
@@ -163,7 +163,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics. Licensed under CC BY 4.0`,
+      copyright: `Copyright © ${new Date().getFullYear()} The Humanoid Blueprint.<br/><span style="opacity: 0.8; font-size: 0.9em;">Created by <b>Rehan Ahmed</b>, Agentic AI Developer. Licensed under CC BY 4.0</span>`,
     },
     prism: {
       theme: prismThemes.github,

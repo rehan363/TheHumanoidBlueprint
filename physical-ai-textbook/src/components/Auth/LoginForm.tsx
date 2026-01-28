@@ -17,13 +17,13 @@ export default function LoginForm() {
             const { data, error } = await signIn.email({
                 email,
                 password,
-                callbackURL: "/",
+                callbackURL: "/panaversity-hackathon-I/",
             });
 
             if (error) {
                 setError(error.message || 'Failed to login');
             } else {
-                window.location.href = '/';
+                window.location.href = '/panaversity-hackathon-I/';
             }
         } catch (err) {
             setError('An unexpected error occurred');

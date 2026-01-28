@@ -1,66 +1,72 @@
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  badge: string;
+  imgSrc: string;
   description: ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Module 1: ROS 2 Foundations',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Nervous System',
+    badge: 'MODULE 1: ROS 2',
+    imgSrc: require('@site/static/img/module-ros2.png').default,
     description: (
       <>
-        Master the "Robotic Nervous System". Learn ROS 2 nodes, topics, services,
-        and how to build the foundational architecture for Physical AI systems.
+        Construct the foundational communication architecture of a humanoid robot.
+        Learn real-time node orchestration, custom interfaces, and lifecycle management.
       </>
     ),
   },
   {
-    title: 'Module 2: The Digital Twin',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Digital Twins',
+    badge: 'MODULE 2: SIMULATION',
+    imgSrc: require('@site/static/img/module-simulation.png').default,
     description: (
       <>
-        Bridge reality and simulation. Explore high-fidelity physics with Gazebo
-        and Unity, simulating complex environments before deploying to hardware.
+        Bridge the gap with high-fidelity simulation. Develop in Gazebo and Isaac Sim
+        to test control algorithms and sensor fusion before deploying to physical hardware.
       </>
     ),
   },
   {
-    title: 'Module 3: AI-Robot Brain',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Robot Cognitive Brain',
+    badge: 'MODULE 3: AUTONOMY',
+    imgSrc: require('@site/static/img/module-autonomy.png').default,
     description: (
       <>
-        Powered by NVIDIA Isaac™. Develop advanced perception, VSLAM, and
-        autonomous navigation for humanoid robots using hardware-accelerated AI.
+        Implement the VLA (Vision-Language-Action) framework. Use deep learning to
+        enable semantic understanding and autonomous decision making in physical space.
       </>
     ),
   },
   {
-    title: 'Module 4: VLA Integration',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Physical Deployment',
+    badge: 'MODULE 4: HARDWARE',
+    imgSrc: require('@site/static/img/module-hardware.png').default,
     description: (
       <>
-        The future of Robotics. Integrate Vision-Language-Action models (VLA)
-        and LLMs like GPT-4 to enable natural human-robot interaction.
+        Bring it all to life on real actuators. Calibrate sensors, tune PID loops,
+        and optimize model inference for real-time edge performance on humanoid platforms.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, badge, imgSrc, description }: FeatureItem) {
   return (
     <div className={clsx('col col--3')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
+      <div className={styles.featureCard}>
+        <div className={styles.badge}>{badge}</div>
+        <div className={styles.featureIconWrapper}>
+          <img src={imgSrc} className={styles.featureImage} alt={title} />
+        </div>
+        <Heading as="h3" className={styles.featureTitle}>{title}</Heading>
+        <p className={styles.featureDescription}>{description}</p>
       </div>
     </div>
   );
